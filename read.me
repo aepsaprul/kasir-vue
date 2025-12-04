@@ -1,0 +1,60 @@
+tambahkan halaman setting/pengaturan web yg meliputi nama toko, email, telepon, alamat lengkap, logo.
+data setting ini akan di tampilkan di halaman login.
+
+upload logo selain akan di tampilkan di halaman login berfungsi juga untuk mengubah di bagian sidebar:
+<CSidebarBrand v-bind="$attrs" as="a" :href="href" @click="navigate">
+    <CIcon custom-class-name="sidebar-brand-full" :icon="logo" :height="32" />
+    <CIcon custom-class-name="sidebar-brand-narrow" :icon="sygnet" :height="32" />
+</CSidebarBrand>
+
+---------------------------------------------------------------------------------------
+
+tambahkan halaman profil yg bisa ubah password dan atau juga mengubah avatar untuk CAvatar di file AppHeaderDropdownAccnt.vue
+
+----------------------------------------------------------------------------------------
+
+Tahap 1: Desain Database & Setup Project Backend (Node.js).
+
+Tahap 2: Implementasi Otentikasi (Login/Register) di Backend & Integrasi Frontend CoreUI.
+
+Tahap 3: Backend & Frontend untuk Master Data (Kategori, Satuan, Supplier).
+
+Tahap 4: Backend & Frontend untuk Produk (Harga Bertingkat & Stok).
+
+Tahap 5: Transaksi (Penjualan/Kasir & Kasbon).
+
+Tahap 6: Laporan.
+
+----------------------------------------------------------------------------------------
+
+bantu saya membuat aplikasi kasir dengan spesifikasi:
+
+teknologi:
+1. frontend dengan vuejs versi 3.
+2. backend api dengan nodejs + express js.
+3. database mysql.
+4. template dengan CoreUI.
+
+fitur-fitur:
+1. otentikasi
+2. profile
+3. manajemen/master
+    - kategori produk
+    - satuan/unit
+    - produk (bisa mengatur: harga per produk, harga jual/retail, harga grosir dengan minimal pembelian)
+    - stok
+    - pelanggan
+    - supplier
+    - diskon
+4. transaksi
+    - pembelian
+    - penjualan
+    - kasbon
+5. laporan
+    - laba rugi
+    - cash flow
+
+catatan:
+- saya sudah download template CoreUI VueJs dan sudah bisa jalankan "npm run dev".
+- semua koding dibuat oleh AI dari mulai buat tabel database, backend API dan frontend, saya tinggal copy paste.
+- buat secara bertahap agar lebih detail dan berikan sedikit penjelasan.

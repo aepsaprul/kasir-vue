@@ -1,0 +1,55 @@
+const db = require('../config/db');
+
+exports.createPurchase = async (req, res) => {
+    // Data: supplier_id, invoice_no (dari nota supplier), items
+    const { supplier_id, invoice_no, items } = req.body;
+    const userId = req.user.id;
+
+    const connection = await db.getConnection();
+    await connection.beginTransaction();
+
+    try {
+        let totalAmount = 0;
+
+        // 1. Hitung Total
+        items.forEach(item => {
+            totalAmount += item.price_buy * item.qty;
+        });
+
+        // 2. Simpan Header Pembelian
+        // Jika user tidak isi invoice_no, kita generate otomatis
+        const finalInvoice = invoice_no || `BUY-${Date.now()}`;
+
+        const [resHeader] = await connection.query(
+            `INSERT INTO purchases (invoice_no, supplier_id, user_id, total_amount) VALUES (?, ?, ?, ?)`,
+            [finalInvoice, supplier_id, userId, totalAmount]
+        );
+        const purchaseId = resHeader.insertId;
+
+        // 3. Simpan Detail & Update Stok Master
+        for (const item of items) {
+            // Insert history item
+            await connection.query(
+                `INSERT INTO purchase_items (purchase_id, product_id, qty, price_buy, subtotal) VALUES (?, ?, ?, ?, ?)`,
+                [purchaseId, item.id, item.qty, item.price_buy, (item.price_buy * item.qty)]
+            );
+
+            // PENTING: Update Stok (+Qty) DAN Update Harga Beli Terbaru di Master Produk
+            // Kita asumsikan harga beli terbaru adalah harga yang berlaku sekarang
+            await connection.query(
+                `UPDATE products SET stock = stock + ?, price_buy = ? WHERE id = ?`,
+                [item.qty, item.price_buy, item.id]
+            );
+        }
+
+        await connection.commit();
+        res.status(201).json({ message: 'Pembelian berhasil disimpan' });
+
+    } catch (error) {
+        await connection.rollback();
+        console.error(error);
+        res.status(500).json({ message: 'Gagal memproses pembelian' });
+    } finally {
+        connection.release();
+    }
+};
