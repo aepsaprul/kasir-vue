@@ -1,4 +1,6 @@
 const db = require('../config/db');
+const fs = require('fs');
+const path = require('path');
 
 // TAMPILKAN SEMUA PRODUK (Dengan Nama Kategori & Satuan)
 exports.getAll = async (req, res) => {
@@ -33,25 +35,26 @@ exports.getOne = async (req, res) => {
 exports.create = async (req, res) => {
     const { 
         code, name, category_id, unit_id, 
-        price_buy, price_sell, price_wholesale, min_wholesale_qty, stock, 
-        min_stock
+        price_buy, price_sell, price_wholesale, min_wholesale_qty, stock, min_stock 
     } = req.body;
 
+    // Ambil nama file jika ada upload
+    const image = req.file ? req.file.filename : null;
+
     try {
-        // Cek kode unik
         const [existing] = await db.query('SELECT id FROM products WHERE code = ?', [code]);
         if (existing.length > 0) return res.status(400).json({ message: 'Kode barang sudah ada!' });
 
         const query = `
             INSERT INTO products 
-            (code, name, category_id, unit_id, price_buy, price_sell, price_wholesale, min_wholesale_qty, stock, min_stock) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            (code, name, category_id, unit_id, price_buy, price_sell, price_wholesale, min_wholesale_qty, stock, min_stock, image) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
         
         await db.query(query, [
             code, name, category_id, unit_id, 
-            price_buy, price_sell, price_wholesale, min_wholesale_qty, stock,
-            min_stock || 5
+            price_buy, price_sell, price_wholesale, min_wholesale_qty, stock, min_stock || 5, 
+            image
         ]);
         
         res.status(201).json({ message: 'Produk berhasil ditambahkan' });
@@ -65,22 +68,38 @@ exports.update = async (req, res) => {
     const { id } = req.params;
     const { 
         code, name, category_id, unit_id, 
-        price_buy, price_sell, price_wholesale, min_wholesale_qty, stock,
-        min_stock
+        price_buy, price_sell, price_wholesale, min_wholesale_qty, stock, min_stock 
     } = req.body;
 
     try {
-        const query = `
+        let sql = `
             UPDATE products SET 
             code=?, name=?, category_id=?, unit_id=?, 
             price_buy=?, price_sell=?, price_wholesale=?, min_wholesale_qty=?, stock=?, min_stock=?
-            WHERE id=?
         `;
-        await db.query(query, [
+        let params = [
             code, name, category_id, unit_id, 
-            price_buy, price_sell, price_wholesale, min_wholesale_qty, stock,
-            min_stock || 5, id
-        ]);
+            price_buy, price_sell, price_wholesale, min_wholesale_qty, stock, min_stock
+        ];
+
+        // Jika ada upload gambar baru
+        if (req.file) {
+            // 1. Hapus gambar lama
+            const [rows] = await db.query('SELECT image FROM products WHERE id = ?', [id]);
+            if (rows[0] && rows[0].image) {
+                const oldPath = path.join(__dirname, '../uploads', rows[0].image);
+                if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+            }
+
+            // 2. Tambahkan ke query update
+            sql += `, image=?`;
+            params.push(req.file.filename);
+        }
+
+        sql += ` WHERE id=?`;
+        params.push(id);
+
+        await db.query(sql, params);
         res.json({ message: 'Produk berhasil diupdate' });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -91,9 +110,16 @@ exports.update = async (req, res) => {
 exports.delete = async (req, res) => {
     const { id } = req.params;
     try {
+        // Hapus file gambar dulu sebelum hapus data DB
+        const [rows] = await db.query('SELECT image FROM products WHERE id = ?', [id]);
+        if (rows[0] && rows[0].image) {
+            const oldPath = path.join(__dirname, '../uploads', rows[0].image);
+            if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+        }
+
         await db.query('DELETE FROM products WHERE id = ?', [id]);
         res.json({ message: 'Produk berhasil dihapus' });
     } catch (error) {
-        res.status(500).json({ message: error.message }); // Biasanya gagal kalau produk sudah pernah dipake transaksi
+        res.status(500).json({ message: error.message });
     }
 };
