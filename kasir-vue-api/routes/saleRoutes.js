@@ -5,7 +5,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 
 router.use(authMiddleware);
 
-// POST transaksi baru
+router.get('/', saleController.getHistory);
 router.post('/', saleController.createSale);
 
 module.exports = router;

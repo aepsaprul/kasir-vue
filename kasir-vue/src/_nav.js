@@ -54,16 +54,31 @@ export default [
     name: 'Transaksi',
   },
   {
-    component: 'CNavItem',
-    name: 'Pembelian (Restock)',
-    to: '/transaction/purchases',
-    icon: 'cil-cart',
-  },
-  {
-    component: 'CNavItem',
-    name: 'Kasir / Penjualan',
-    to: '/transaction/sales',
+    component: 'CNavGroup',
+    name: 'Transaksi',
     icon: 'cil-money',
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'Kasir / Penjualan',
+        to: '/transaction/sales',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Riwayat Penjualan',
+        to: '/transaction/sales-history',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Restock / Pembelian',
+        to: '/transaction/purchases',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Riwayat Pembelian',
+        to: '/transaction/purchase-history',
+      },
+    ],
   },
   {
     component: 'CNavTitle',

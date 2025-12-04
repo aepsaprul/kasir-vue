@@ -4,6 +4,7 @@ const controller = require('../controllers/purchaseController');
 const authMiddleware = require('../middleware/authMiddleware');
 
 router.use(authMiddleware);
+router.get('/', controller.getHistory);
 router.post('/', controller.createPurchase);
 
 module.exports = router;

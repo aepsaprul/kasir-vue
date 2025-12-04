@@ -69,6 +69,16 @@ const routes = [
         component: () => Sales
       },
       {
+        path: '/transaction/sales-history',
+        name: 'SalesHistory',
+        component: () => import('@/views/transaction/SalesHistory.vue')
+      },
+      {
+        path: '/transaction/purchase-history',
+        name: 'PurchaseHistory',
+        component: () => import('@/views/transaction/PurchaseHistory.vue')
+      },
+      {
         path: '/inventory/stock-opname',
         name: 'StockOpname',
         component: () => StockOpname

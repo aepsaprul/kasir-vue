@@ -1,5 +1,42 @@
 const db = require('../config/db');
 
+exports.getHistory = async (req, res) => {
+    try {
+        // 1. Ambil Data Header Penjualan (Join User & Customer)
+        const queryHeader = `
+            SELECT s.*, u.name as cashier_name, c.name as customer_name
+            FROM sales s
+            LEFT JOIN users u ON s.user_id = u.id
+            LEFT JOIN customers c ON s.customer_id = c.id
+            ORDER BY s.created_at DESC
+        `;
+        const [sales] = await db.query(queryHeader);
+
+        // 2. Ambil Data Item Penjualan (Join Product)
+        const queryItems = `
+            SELECT si.*, p.name as product_name, p.code
+            FROM sale_items si
+            JOIN products p ON si.product_id = p.id
+            ORDER BY si.id ASC
+        `;
+        const [items] = await db.query(queryItems);
+
+        // 3. Gabungkan (Mapping) Item ke dalam Header Penjualan
+        const results = sales.map(sale => {
+            return {
+                ...sale,
+                items: items.filter(item => item.sale_id === sale.id)
+            };
+        });
+
+        res.json(results);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
 exports.createSale = async (req, res) => {
     // Data dari Frontend: customer_id (opsional), items (array produk), paid_amount (bayar)
     const { customer_id, items, paid_amount } = req.body; 

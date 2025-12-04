@@ -1,5 +1,42 @@
 const db = require('../config/db');
 
+exports.getHistory = async (req, res) => {
+    try {
+        // 1. Ambil Header Pembelian (Join User & Supplier)
+        const queryHeader = `
+            SELECT p.*, u.name as admin_name, s.name as supplier_name
+            FROM purchases p
+            LEFT JOIN users u ON p.user_id = u.id
+            LEFT JOIN suppliers s ON p.supplier_id = s.id
+            ORDER BY p.created_at DESC
+        `;
+        const [purchases] = await db.query(queryHeader);
+
+        // 2. Ambil Item Pembelian
+        const queryItems = `
+            SELECT pi.*, p.name as product_name, p.code
+            FROM purchase_items pi
+            JOIN products p ON pi.product_id = p.id
+            ORDER BY pi.id ASC
+        `;
+        const [items] = await db.query(queryItems);
+
+        // 3. Gabungkan
+        const results = purchases.map(pur => {
+            return {
+                ...pur,
+                items: items.filter(item => item.purchase_id === pur.id)
+            };
+        });
+
+        res.json(results);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
 exports.createPurchase = async (req, res) => {
     // Data: supplier_id, invoice_no (dari nota supplier), items
     const { supplier_id, invoice_no, items } = req.body;
