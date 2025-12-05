@@ -3,62 +3,75 @@
         <CRow>
             <CCol :md="12">
                 <CCard class="mb-4">
-                    <CCardHeader class="d-flex justify-content-between align-items-center">
-                        <strong>Data Produk</strong>
-                        <CButton color="primary" size="sm" @click="openModal"><CIcon icon="cil-plus" height="15"/> Tambah Produk</CButton>
+                    <CCardHeader>
+                        <CRow>
+                            <CCol>
+                                <strong>Data Produk</strong>
+                            </CCol>
+                            <CCol class="text-end">
+                                <CButton color="primary" size="sm" @click="openModal"><CIcon icon="cil-plus" height="15"/> Tambah Produk</CButton>
+                            </CCol>
+                        </CRow>
                     </CCardHeader>
                     <CCardBody>
-                        <CTable hover responsive bordered align="middle">
-                            <CTableHead>
-                                <CTableRow>
-                                    <CTableHeaderCell>Gambar</CTableHeaderCell>
-                                    <CTableHeaderCell>Kode</CTableHeaderCell>
-                                    <CTableHeaderCell>Nama Produk</CTableHeaderCell>
-                                    <CTableHeaderCell>Kategori</CTableHeaderCell>
-                                    <CTableHeaderCell>Stok</CTableHeaderCell>
-                                    <CTableHeaderCell>Harga Jual</CTableHeaderCell>
-                                    <CTableHeaderCell>Aksi</CTableHeaderCell>
-                                </CTableRow>
-                                </CTableHead>
-                                <CTableBody>
-                                <CTableRow v-for="item in products" :key="item.id">
-                                <CTableDataCell class="text-center" width="80">
-                                    <img 
-                                        v-if="item.image" 
-                                        :src="`http://localhost:5000/uploads/${item.image}`" 
-                                        class="rounded border"
-                                        style="width: 50px; height: 50px; object-fit: cover;"
-                                    />
-                                    <div v-else class="bg-light rounded border d-flex align-items-center justify-content-center text-muted" style="width: 50px; height: 50px;">
-                                        <small>No Pic</small>
-                                    </div>
-                                </CTableDataCell>
-                                
-                                <CTableDataCell>{{ item.code }}</CTableDataCell>
-                                <CTableDataCell>
-                                    {{ item.name }} <br>
-                                    <small class="text-muted">Unit: {{ item.unit_name }}</small>
-                                </CTableDataCell>
-                                <CTableDataCell>{{ item.category_name }}</CTableDataCell>
-                                <CTableDataCell>
-                                    <span :class="item.stock <= item.min_stock ? 'text-danger fw-bold' : 'text-success'">
-                                        {{ item.stock }}
-                                    </span>
-                                    <br><small class="text-muted" style="font-size: 0.7rem;">Min: {{ item.min_stock }}</small>
-                                </CTableDataCell>
-                                <CTableDataCell>{{ formatRupiah(item.price_sell) }}</CTableDataCell>
-                                <CTableDataCell>
-                                    <CButton color="warning" size="sm" class="me-1 text-white" @click="editItem(item)"><CIcon icon="cil-pencil" height="15"/> Edit</CButton>
-                                    <CButton color="danger" size="sm" class="text-white" @click="deleteItem(item.id)"><CIcon icon="cil-trash" height="15"/> Hapus</CButton>
-                                </CTableDataCell>
-                                </CTableRow>
-                                <CTableRow v-if="products.length === 0">
-                                    <CTableDataCell colspan="7" class="text-center">Belum ada data produk</CTableDataCell>
-                                </CTableRow>
-                            </CTableBody>
-                        </CTable>
+                        <CInputGroup size="sm">
+                            <CInputGroupText><CIcon icon="cil-search"/></CInputGroupText>
+                            <CFormInput v-model="searchKeyword" placeholder="Cari Kode, Nama, Kategori..."/>
+                        </CInputGroup>
                     </CCardBody>
                 </CCard>
+
+                <div class="row g-3">
+                            <div 
+                                class="col-12" 
+                                v-for="item in filteredProducts" 
+                                :key="item.id"
+                            >
+                                <div class="card h-100 shadow-sm product-card">
+                                    <div class="d-flex justify-content-between">
+                                        <div class="d-flex justify-content-center align-items-center" style="width: 20%;">
+                                            <!-- Gambar Produk -->
+                                            <img 
+                                                v-if="item.image"
+                                                :src="`http://localhost:5000/uploads/${item.image}`"
+                                                class="card-img-top product-img p-3"
+                                            />
+                                            <div v-else class="no-img-box d-flex align-items-center justify-content-center">
+                                                No Image
+                                            </div>
+                                        </div>
+                                        <div style="width: 80%;">
+                                            <div class="card-body p-3">
+                                                <h6 class="fw-bold mb-1">{{ item.name }}</h6>
+        
+                                                <div class="text-muted small mb-2 d-flex justify-content-between">
+                                                    <div><span class="fw-bold">{{ item.code }}</span> <span class="badge bg-light text-dark border">{{ item.category_name }}</span></div>
+                                                    <div class="text-end"><span class="fw-bold">{{ formatRupiah(item.price_sell) }}</span></div>
+                                                </div>
+        
+                                                <div class="d-flex justify-content-between align-items-end mb-2">
+                                                    <div>
+                                                        <small class="text-muted">Stok</small><br>
+                                                        <span :class="item.stock <= item.min_stock ? 'text-danger fw-bold' : 'text-success fw-bold'">
+                                                            {{ item.stock }}
+                                                        </span>
+                                                        <small class="text-muted"> / Min {{ item.min_stock }} {{ item.unit_name }}</small>
+                                                    </div>
+                                                    <div>
+                                                        <CButton color="warning" size="sm" class="me-1 text-white" @click="editItem(item)"><CIcon icon="cil-pencil" height="18"/></CButton>
+                                                        <CButton color="danger" size="sm" class="text-white" @click="deleteItem(item.id)"><CIcon icon="cil-trash" height="18"/></CButton>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div v-if="filteredProducts.length === 0" class="col-12 text-center py-4 text-muted">
+                                {{ searchKeyword ? 'Produk tidak ditemukan' : 'Belum ada data produk' }}
+                            </div>
+                        </div>
             </CCol>
         </CRow>
 
@@ -71,7 +84,8 @@
                     
                     <CCol md="12" class="d-flex align-items-center mb-3">
                         <div class="me-3 border p-1 rounded">
-                            <img :src="imagePreview || 'https://via.placeholder.com/100?text=No+Image'" style="width: 100px; height: 100px; object-fit: cover;" />
+                            <img :src="imagePreview || 'https://via.placeholder.com/100?text=No+Image'" 
+                                style="width: 100px; height: 100px; object-fit: cover;" />
                         </div>
                         <div class="flex-grow-1">
                             <label class="form-label">Foto Produk</label>
@@ -164,29 +178,45 @@ export default {
     name: 'Products',
     data() {
         return {
-            products: [],
-            categories: [],
-            units: [],
-            showModal: false,
-            isEdit: false,
-            
-            // Data Form
-            form: {
-                id: null, code: '', name: '', category_id: null, unit_id: null,
-                price_buy: 0, price_sell: 0, price_wholesale: 0, min_wholesale_qty: 0, 
-                stock: 0, min_stock: 5
-            },
-            selectedFile: null, // File gambar yg dipilih
-            imagePreview: null, // URL Preview
+        products: [],
+        categories: [],
+        units: [],
+        showModal: false,
+        isEdit: false,
+        
+        // LOGIC PENCARIAN PRODUK BARU
+        searchKeyword: '', 
 
-            // Autocomplete
-            categorySearch: '', showCategoryList: false,
-            unitSearch: '', showUnitList: false,
-            
-            moneyConfig: { prefix: 'Rp ', suffix: '', thousands: '.', decimal: ',', precision: 0, disableNegative: true }
+        // Data Form
+        form: {
+            id: null, code: '', name: '', category_id: null, unit_id: null,
+            price_buy: 0, price_sell: 0, price_wholesale: 0, min_wholesale_qty: 0, 
+            stock: 0, min_stock: 5
+        },
+        selectedFile: null,
+        imagePreview: null,
+
+        // Autocomplete Kategori/Satuan
+        categorySearch: '', showCategoryList: false,
+        unitSearch: '', showUnitList: false,
+        
+        moneyConfig: { prefix: 'Rp ', suffix: '', thousands: '.', decimal: ',', precision: 0, disableNegative: true }
         };
     },
     computed: {
+        // --- COMPUTED PROPERTY BARU UNTUK FILTER PRODUK ---
+        filteredProducts() {
+            if (!this.searchKeyword) return this.products;
+            
+            const key = this.searchKeyword.toLowerCase();
+            return this.products.filter(item => 
+                item.name.toLowerCase().includes(key) || // Cari Nama
+                item.code.toLowerCase().includes(key) || // Cari Kode Barcode
+                (item.category_name && item.category_name.toLowerCase().includes(key)) // Cari Nama Kategori
+            );
+        },
+        // --------------------------------------------------
+
         filteredCategories() {
             return this.categories.filter(c => c.name.toLowerCase().includes(this.categorySearch.toLowerCase()));
         },
@@ -203,10 +233,10 @@ export default {
             return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(val);
         },
         async fetchProducts() {
-            try {
-                const response = await axios.get('/products');
-                this.products = response.data;
-            } catch (error) { console.error(error); }
+        try {
+            const response = await axios.get('/products');
+            this.products = response.data;
+        } catch (error) { console.error(error); }
         },
         async fetchDropdowns() {
             try {
@@ -240,57 +270,49 @@ export default {
         },
 
         openModal() {
-            this.isEdit = false;
-            this.form = { 
-                id: null, code: '', name: '', category_id: null, unit_id: null,
-                price_buy: 0, price_sell: 0, price_wholesale: 0, min_wholesale_qty: 0, 
-                stock: 0, min_stock: 5 
-            };
-            this.categorySearch = '';
-            this.unitSearch = '';
-            this.selectedFile = null;
+        this.isEdit = false;
+        this.form = { 
+            id: null, code: '', name: '', category_id: null, unit_id: null,
+            price_buy: 0, price_sell: 0, price_wholesale: 0, min_wholesale_qty: 0, 
+            stock: 0, min_stock: 5 
+        };
+        this.categorySearch = '';
+        this.unitSearch = '';
+        this.selectedFile = null;
+        this.imagePreview = null;
+        this.showModal = true;
+        },
+        editItem(item) {
+        this.isEdit = true;
+        this.form = { ...item };
+        this.categorySearch = item.category_name || ''; 
+        this.unitSearch = item.unit_name || '';
+        this.selectedFile = null;
+        
+        if(item.image) {
+            this.imagePreview = `http://localhost:5000/uploads/${item.image}`;
+        } else {
             this.imagePreview = null;
-            this.showModal = true;
-            },
-            editItem(item) {
-            this.isEdit = true;
-            this.form = { ...item };
-            this.categorySearch = item.category_name || ''; 
-            this.unitSearch = item.unit_name || '';
-            this.selectedFile = null;
-            
-            // Set Preview jika ada gambar
-            if(item.image) {
-                this.imagePreview = `http://localhost:5000/uploads/${item.image}`;
-            } else {
-                this.imagePreview = null;
-            }
-            this.showModal = true;
+        }
+        this.showModal = true;
         },
 
         async saveData() {
             if(!this.form.name || !this.form.category_id) return alert("Lengkapi data!");
             
-            // PENTING: Gunakan FormData untuk upload file
             const formData = new FormData();
-            
-            // Append semua data form ke FormData
             Object.keys(this.form).forEach(key => {
-                // Hati-hati dengan null value, formData ubah jadi string "null"
                 if (this.form[key] !== null) {
                     formData.append(key, this.form[key]);
                 }
             });
 
-            // Append File jika ada
             if (this.selectedFile) {
                 formData.append('image', this.selectedFile);
             }
 
             try {
-                // Header Content-Type otomatis diurus axios jika pakai FormData, tapi lebih aman set manual
                 const config = { headers: { 'Content-Type': 'multipart/form-data' } };
-
                 if (this.isEdit) {
                     await axios.put(`/products/${this.form.id}`, formData, config);
                 } else {
