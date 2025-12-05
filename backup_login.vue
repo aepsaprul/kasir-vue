@@ -253,29 +253,36 @@ export default {
     return {
       email: '',
       password: '',
+      showPassword: false,
+      rememberMe: false,
       errorMessage: '',
-      settings: { store_name: '', address: '', logo: '', phone: '', email: '' }
+      isLoading: false,
+      settings: { 
+        store_name: '', 
+        address: '', 
+        logo: '', 
+        phone: '', 
+        email: '' 
+      }
     }
   },
   mounted() {
-      this.fetchSettings();
+    this.fetchSettings();
   },
   methods: {
     async fetchSettings() {
-        // Ambil data setting secara publik (tanpa token)
-        try {
-            // Note: Pastikan di axios global login page tidak mengirim token yang salah/kadaluarsa
-            // Atau gunakan axios instance baru. Tapi biasanya endpoint GET /settings kita buat public.
-            const response = await axios.get('http://localhost:5000/api/settings');
-            this.settings = response.data;
-        } catch (e) {
-            console.error('Gagal load setting', e);
-        }
+      try {
+        const response = await axios.get('http://localhost:5000/api/settings');
+        this.settings = response.data;
+      } catch (e) {
+        console.error('Gagal load setting', e);
+      }
     },
     async handleLogin() {
+      this.errorMessage = '';
+      this.isLoading = true;
+      
       try {
-        this.errorMessage = '' // Reset error
-        
         // Panggil API Backend
         const response = await axios.post('http://localhost:5000/api/auth/login', {
           email: this.email,
@@ -284,20 +291,44 @@ export default {
 
         // Jika sukses
         if (response.data.token) {
-          // 1. Simpan token & user info ke LocalStorage
+          // Simpan data login
           localStorage.setItem('token', response.data.token)
           localStorage.setItem('user', JSON.stringify(response.data.user))
+          
+          // Jika remember me dicentang, simpan juga
+          if (this.rememberMe) {
+            localStorage.setItem('rememberedEmail', this.email)
+          }
 
-          // 2. Redirect ke Dashboard
-          this.$router.push('/dashboard')
+          // Tampilkan pesan sukses sebelum redirect
+          this.$toast.success('Login berhasil! Mengalihkan...', {
+            position: 'top-right',
+            duration: 2000
+          });
+          
+          // Redirect ke Dashboard setelah delay kecil
+          setTimeout(() => {
+            this.$router.push('/dashboard')
+          }, 1500)
         }
       } catch (error) {
-        // Tangani error jika password salah atau server mati
+        // Tangani error
         if (error.response) {
-            this.errorMessage = error.response.data.message
+          this.errorMessage = error.response.data.message || 'Email atau password salah'
+        } else if (error.request) {
+          this.errorMessage = 'Tidak dapat terhubung ke server. Periksa koneksi internet Anda.'
         } else {
-            this.errorMessage = 'Gagal terhubung ke server backend'
+          this.errorMessage = 'Terjadi kesalahan. Silakan coba lagi.'
         }
+        
+        // Animasi shake untuk form pada error
+        const form = document.querySelector('.login-form-section');
+        form.classList.add('animate__animated', 'animate__headShake');
+        setTimeout(() => {
+          form.classList.remove('animate__animated', 'animate__headShake');
+        }, 1000);
+      } finally {
+        this.isLoading = false;
       }
     }
   }

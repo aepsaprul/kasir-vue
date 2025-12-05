@@ -17,7 +17,28 @@ axios.interceptors.request.use(config => {
         config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
+}, error => {
+    return Promise.reject(error);
 });
+
+axios.interceptors.response.use(
+    response => response, // Jika sukses, loloskan saja
+    error => {
+        // Jika errornya adalah 401 (Unauthorized)
+        if (error.response && error.response.status === 401) {
+            console.warn('Sesi habis, logout otomatis...');
+            
+            // Hapus data sesi
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            
+            // Paksa pindah ke halaman login
+            // Kita pakai window.location agar state aplikasi bersih total
+            window.location.href = '/#/pages/login'; 
+        }
+        return Promise.reject(error);
+    }
+);
 
 const app = createApp(App)
 app.use(createPinia())

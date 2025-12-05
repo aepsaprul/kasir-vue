@@ -270,31 +270,32 @@ export default {
         },
 
         openModal() {
-        this.isEdit = false;
-        this.form = { 
-            id: null, code: '', name: '', category_id: null, unit_id: null,
-            price_buy: 0, price_sell: 0, price_wholesale: 0, min_wholesale_qty: 0, 
-            stock: 0, min_stock: 5 
-        };
-        this.categorySearch = '';
-        this.unitSearch = '';
-        this.selectedFile = null;
-        this.imagePreview = null;
-        this.showModal = true;
-        },
-        editItem(item) {
-        this.isEdit = true;
-        this.form = { ...item };
-        this.categorySearch = item.category_name || ''; 
-        this.unitSearch = item.unit_name || '';
-        this.selectedFile = null;
-        
-        if(item.image) {
-            this.imagePreview = `http://localhost:5000/uploads/${item.image}`;
-        } else {
+            this.isEdit = false;
+            this.form = { 
+                id: null, code: '', name: '', category_id: null, unit_id: null,
+                price_buy: 0, price_sell: 0, price_wholesale: 0, min_wholesale_qty: 0, 
+                stock: 0, min_stock: 5 
+            };
+            this.categorySearch = '';
+            this.unitSearch = '';
+            this.selectedFile = null;
             this.imagePreview = null;
-        }
-        this.showModal = true;
+            this.showModal = true;
+        },
+
+        editItem(item) {
+            this.isEdit = true;
+            this.form = { ...item };
+            this.categorySearch = item.category_name || ''; 
+            this.unitSearch = item.unit_name || '';
+            this.selectedFile = null;
+            
+            if(item.image) {
+                this.imagePreview = `http://localhost:5000/uploads/${item.image}`;
+            } else {
+                this.imagePreview = null;
+            }
+            this.showModal = true;
         },
 
         async saveData() {
