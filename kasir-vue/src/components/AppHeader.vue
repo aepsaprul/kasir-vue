@@ -80,8 +80,8 @@ onMounted(() => {
         <AppHeaderDropdownAccnt />
       </CHeaderNav>
     </CContainer>
-    <CContainer class="px-4" fluid>
+    <!-- <CContainer class="px-4" fluid>
       <AppBreadcrumb />
-    </CContainer>
+    </CContainer> -->
   </CHeader>
 </template>

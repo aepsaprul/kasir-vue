@@ -14,9 +14,10 @@ exports.getHistory = async (req, res) => {
 
         // 2. Ambil Data Item Penjualan (Join Product)
         const queryItems = `
-            SELECT si.*, p.name as product_name, p.code
+            SELECT si.*, p.name as product_name, p.code, cat.name as category_name
             FROM sale_items si
             JOIN products p ON si.product_id = p.id
+            LEFT JOIN categories cat ON p.category_id = cat.id
             ORDER BY si.id ASC
         `;
         const [items] = await db.query(queryItems);
@@ -39,7 +40,7 @@ exports.getHistory = async (req, res) => {
 
 exports.createSale = async (req, res) => {
     // Data dari Frontend: customer_id (opsional), items (array produk), paid_amount (bayar)
-    const { customer_id, items, paid_amount } = req.body; 
+    const { customer_id, items, paid_amount, payment_method } = req.body; 
     const userId = req.user.id; // Diambil dari token login
 
     // Buat Nomor Invoice Otomatis (Format: INV-TIMESTAMP)
@@ -75,9 +76,9 @@ exports.createSale = async (req, res) => {
         if (changeAmount < 0) throw new Error('Uang pembayaran kurang!');
 
         const [saleResult] = await connection.query(
-            `INSERT INTO sales (invoice_no, user_id, customer_id, total_amount, final_amount, paid_amount, change_amount) 
-             VALUES (?, ?, ?, ?, ?, ?, ?)`,
-            [invoiceNo, userId, customer_id || null, totalAmount, totalAmount, paid_amount, changeAmount]
+            `INSERT INTO sales (invoice_no, user_id, customer_id, total_amount, final_amount, paid_amount, change_amount, payment_method) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            [invoiceNo, userId, customer_id || null, totalAmount, totalAmount, paid_amount, changeAmount, payment_method || 'Tunai']
         );
 
         const saleId = saleResult.insertId;

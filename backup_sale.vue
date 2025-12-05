@@ -1,70 +1,56 @@
 <template>
     <div>
         <CRow>
-            <CCol :md="7">
+            <CCol :md="8">
                 <CCard class="mb-4" style="height: 85vh;">
-                    <CCardHeader>
-                        <CRow class="g-2">
-                            <CCol md="4">
-                                <CFormSelect v-model="selectedCategory" aria-label="Pilih Kategori">
-                                    <option value="">Semua Kategori</option>
-                                    <option v-for="cat in categories" :key="cat.id" :value="cat.id">
-                                        {{ cat.name }}
-                                    </option>
-                                </CFormSelect>
-                            </CCol>
-                            
-                            <CCol md="8">
-                                <CInputGroup>
-                                <CInputGroupText><CIcon icon="cil-search"/></CInputGroupText>
-                                <CFormInput 
-                                    v-model="searchKeyword" 
-                                    placeholder="Scan Barcode / Cari Produk..." 
-                                    ref="searchInput"
-                                    autofocus
-                                />
-                                </CInputGroup>
-                            </CCol>
-                        </CRow>
-                    </CCardHeader>
-
-                    <CCardBody style="overflow-y: auto;">
-                        <div v-if="loading" class="text-center p-3">Memuat produk...</div>
-                        <div class="row" v-else>
-                        <div 
-                            class="col-lg-3 col-md-4 col-12 mb-3" 
-                            v-for="product in filteredProducts" 
-                            :key="product.id"
-                            @click="addToCart(product)"
-                            style="cursor: pointer;"
-                        >
-                            <div class="card h-100 border shadow-sm" :class="{'bg-light': product.stock <= 0}">
-                            <div class="card-body p-2">
-                                <img 
-                                    v-if="product.image"
-                                    :src="`http://localhost:5000/uploads/${product.image}`"
-                                    class="card-img-top product-img"
-                                />
-                                <div v-else class="no-img-box d-flex align-items-center justify-content-center">
-                                    No Image
-                                </div>
-                                <div class="card-title fw-bold text-truncate" style="font-size: 13px;">{{ product.name }}</div>
-                                <div class="text-danger fw-bold" style="font-size: 15px;">{{ formatRupiah(product.price_sell) }}</div>
-                                <span style="font-size: 12px;">
-                                Stok: {{ product.stock }}
-                                </span>
+                <CCardHeader>
+                    <CInputGroup>
+                    <CInputGroupText><CIcon icon="cil-search"/></CInputGroupText>
+                    <CFormInput 
+                        v-model="searchKeyword" 
+                        placeholder="Scan Barcode atau Cari Nama Produk..." 
+                        ref="searchInput"
+                        autofocus
+                    />
+                    </CInputGroup>
+                </CCardHeader>
+                <CCardBody style="overflow-y: auto;">
+                    <div v-if="loading" class="text-center p-3">Memuat produk...</div>
+                    <div class="row" v-else>
+                    <div 
+                        class="col-lg-3 col-md-4 col-12 mb-3" 
+                        v-for="product in filteredProducts" 
+                        :key="product.id"
+                        @click="addToCart(product)"
+                        style="cursor: pointer;"
+                    >
+                        <div class="card h-100 border shadow-sm" :class="{'bg-light': product.stock <= 0}">
+                        <div class="card-body p-2">
+                            <img 
+                                v-if="product.image"
+                                :src="`http://localhost:5000/uploads/${product.image}`"
+                                class="card-img-top product-img"
+                            />
+                            <div v-else class="no-img-box d-flex align-items-center justify-content-center">
+                                No Image
                             </div>
-                            </div>
+                            <div class="card-title fw-bold text-truncate" style="font-size: 13px;">{{ product.name }}</div>
+                            <div class="text-danger fw-bold" style="font-size: 15px;">{{ formatRupiah(product.price_sell) }}</div>
+                            <span style="font-size: 12px;">
+                            Stok: {{ product.stock }}
+                            </span>
                         </div>
-                        <div v-if="filteredProducts.length === 0" class="col-12 text-center text-muted mt-5">
-                            Produk tidak ditemukan
                         </div>
-                        </div>
-                    </CCardBody>
+                    </div>
+                    <div v-if="filteredProducts.length === 0" class="col-12 text-center text-muted mt-5">
+                        Produk tidak ditemukan
+                    </div>
+                    </div>
+                </CCardBody>
                 </CCard>
             </CCol>
 
-            <CCol :md="5">
+            <CCol :md="4">
                 <CCard class="mb-4" style="height: 85vh;">
                     <CCardHeader class="bg-primary text-white">
                         <strong>Keranjang Belanja</strong>
@@ -76,14 +62,12 @@
                             <CInputGroupText><CIcon icon="cil-user"/></CInputGroupText>
                             <CFormInput 
                                 v-model="customerSearch" 
-                                placeholder="Ketik nama pelanggan..." 
+                                placeholder="Ketik nama pelanggan (Kosongkan untuk Umum)" 
                                 @focus="showCustomerList = true"
                                 @blur="closeListDelay"
                                 autocomplete="off"
                             />
-                            <CButton type="button" color="secondary" variant="outline" @click="resetCustomer" v-if="selectedCustomerId">
-                                X
-                            </CButton>
+                            <CButton type="button" color="secondary" variant="outline" @click="resetCustomer" v-if="selectedCustomerId"><CIcon icon="cil-x-circle"></CIcon></CButton>
                         </CInputGroup>
                         <ul v-if="showCustomerList" class="custom-dropdown-list list-group">
                             <li v-for="cust in filteredCustomers" :key="cust.id" class="list-group-item list-group-item-action py-1" @mousedown.prevent="selectCustomer(cust)">
@@ -222,52 +206,28 @@ export default {
     name: 'Sales',
     data() {
         return {
-            products: [],
-            categories: [], // DATA KATEGORI
-            customers: [],
-            cart: [],
-            
-            // Filter Produk
-            searchKeyword: '',
-            selectedCategory: '', // SELECTED KATEGORI
+        products: [],
+        customers: [],
+        cart: [],
+        searchKeyword: '',
+        customerSearch: '',
+        selectedCustomerId: null,
+        showCustomerList: false,
+        
+        // Pembayaran
+        payAmount: 0,
+        paymentMethod: 'Tunai', // Default Tunai
 
-            // Filter Pelanggan
-            customerSearch: '',
-            selectedCustomerId: null,
-            showCustomerList: false,
-            
-            // Pembayaran
-            payAmount: 0,
-            paymentMethod: 'Tunai',
-
-            loading: false,
-            isProcessing: false,
-            moneyConfig: { prefix: 'Rp ', suffix: '', thousands: '.', decimal: ',', precision: 0, disableNegative: true }
+        loading: false,
+        isProcessing: false,
+        moneyConfig: { prefix: 'Rp ', suffix: '', thousands: '.', decimal: ',', precision: 0, disableNegative: true }
         };
     },
     computed: {
-        // LOGIKA FILTER: SEARCH KEYWORD + CATEGORY
         filteredProducts() {
-            // 1. Filter dasar (semua produk)
-            let result = this.products;
-            console.log(this.selectedCategory);
-            
-
-            // 2. Filter berdasarkan Kategori (Jika ada yg dipilih)
-            if (this.selectedCategory) {
-                result = result.filter(p => Number(p.category_id) === Number(this.selectedCategory));
-            }
-
-            // 3. Filter berdasarkan Keyword (Nama / Kode)
-            if (this.searchKeyword) {
-                const key = this.searchKeyword.toLowerCase();
-                result = result.filter(p => 
-                    p.name.toLowerCase().includes(key) || 
-                    p.code.toLowerCase().includes(key)
-                );
-            }
-
-            return result;
+        if (!this.searchKeyword) return this.products;
+        const key = this.searchKeyword.toLowerCase();
+        return this.products.filter(p => p.name.toLowerCase().includes(key) || p.code.toLowerCase().includes(key));
         },
         filteredCustomers() {
             if (!this.customerSearch && !this.selectedCustomerId) return this.customers;
@@ -281,8 +241,10 @@ export default {
         return this.payAmount - this.grandTotal;
         }
     },
-
     watch: {
+        // LOGIKA OTOMATIS:
+        // Jika ganti metode ke QRIS/Transfer, otomatis set Uang Diterima = Total Belanja
+        // Jika balik ke Tunai, nolkan (atau biarkan user isi)
         paymentMethod(newVal) {
             if (newVal === 'QRIS' || newVal === 'Transfer') {
                 this.payAmount = this.grandTotal;
@@ -290,19 +252,17 @@ export default {
                 this.payAmount = 0;
             }
         },
+        // Jika keranjang berubah saat mode QRIS/Transfer, update juga bayarnya
         grandTotal(newVal) {
             if (this.paymentMethod === 'QRIS' || this.paymentMethod === 'Transfer') {
                 this.payAmount = newVal;
             }
         }
     },
-
     mounted() {
         this.fetchProducts();
-        this.fetchCategories(); // LOAD KATEGORI
         this.fetchCustomers();
     },
-
     methods: {
         formatRupiah(val) {
             return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(val);
@@ -314,14 +274,6 @@ export default {
                 const response = await axios.get('/products');
                 this.products = response.data;
             } catch (error) { console.error(error); } finally { this.loading = false; }
-        },
-
-        // FUNGSI AMBIL KATEGORI
-        async fetchCategories() {
-            try {
-                const response = await axios.get('/categories');
-                this.categories = response.data;
-            } catch (error) { console.error(error); }
         },
 
         async fetchCustomers() {
@@ -368,10 +320,10 @@ export default {
             this.isProcessing = true;
             try {
                 const payload = {
-                    items: this.cart.map(item => ({ id: item.id, qty: item.qty })),
-                    paid_amount: this.payAmount,
-                    customer_id: this.selectedCustomerId,
-                    payment_method: this.paymentMethod
+                items: this.cart.map(item => ({ id: item.id, qty: item.qty })),
+                paid_amount: this.payAmount,
+                customer_id: this.selectedCustomerId,
+                payment_method: this.paymentMethod // KIRIM METODE PEMBAYARAN
                 };
 
                 const response = await axios.post('/sales', payload);
@@ -380,7 +332,7 @@ export default {
                 
                 this.cart = [];
                 this.payAmount = 0;
-                this.paymentMethod = 'Tunai'; 
+                this.paymentMethod = 'Tunai'; // Reset ke Tunai
                 this.resetCustomer();
                 this.fetchProducts(); 
                 
