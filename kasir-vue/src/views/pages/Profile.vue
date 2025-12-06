@@ -92,7 +92,7 @@ export default {
         
         // Jika user punya avatar custom di DB
         if (user.avatar) {
-            this.avatarPreview = `http://localhost:5000/uploads/${user.avatar}`;
+            this.avatarPreview = this.$fileURL + user.avatar;
         }
         }
     },

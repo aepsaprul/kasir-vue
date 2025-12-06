@@ -33,7 +33,7 @@
                                             <!-- Gambar Produk -->
                                             <img 
                                                 v-if="item.image"
-                                                :src="`http://localhost:5000/uploads/${item.image}`"
+                                                :src="this.$fileURL + item.image"
                                                 class="card-img-top product-img p-3"
                                             />
                                             <div v-else class="no-img-box d-flex align-items-center justify-content-center">
@@ -84,7 +84,7 @@
                     
                     <CCol md="12" class="d-flex align-items-center mb-3">
                         <div class="me-3 border p-1 rounded">
-                            <img :src="imagePreview || 'https://via.placeholder.com/100?text=No+Image'" 
+                            <img :src="imagePreview || this.$fileURL + `broken-image.png`" 
                                 style="width: 100px; height: 100px; object-fit: cover;" />
                         </div>
                         <div class="flex-grow-1">
@@ -291,7 +291,7 @@ export default {
             this.selectedFile = null;
             
             if(item.image) {
-                this.imagePreview = `http://localhost:5000/uploads/${item.image}`;
+                this.imagePreview = this.$fileURL + item.image;
             } else {
                 this.imagePreview = null;
             }

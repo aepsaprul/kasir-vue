@@ -42,7 +42,7 @@
                             <div class="card-body p-2">
                                 <img 
                                     v-if="product.image"
-                                    :src="`http://localhost:5000/uploads/${product.image}`"
+                                    :src="this.$fileURL + product.image"
                                     class="card-img-top product-img"
                                 />
                                 <div v-else class="no-img-box d-flex align-items-center justify-content-center">

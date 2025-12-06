@@ -40,13 +40,16 @@ axios.interceptors.response.use(
     }
 );
 
+
+const fileBaseUrl = import.meta.env.VITE_FILE_URL || process.env.VUE_APP_FILE_URL || 'http://localhost:5000/uploads/';
 const app = createApp(App)
+
 app.use(createPinia())
 app.use(router)
 app.use(CoreuiVue)
 app.provide('icons', icons)
 app.component('CIcon', CIcon)
-
 app.component('money3', Money3Component);
+app.config.globalProperties.$fileURL = fileBaseUrl;
 
 app.mount('#app')

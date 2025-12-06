@@ -71,7 +71,7 @@ export default {
             const res = await axios.get('/settings');
             this.form = res.data;
             if(res.data.logo) {
-                this.previewLogo = `http://localhost:5000/uploads/${res.data.logo}`;
+                this.previewLogo = this.$fileURL + res.data.logo;
                 // Simpan juga ke localStorage agar komponen lain (sidebar/login) bisa baca cepat
                 localStorage.setItem('app_settings', JSON.stringify(res.data));
             }
