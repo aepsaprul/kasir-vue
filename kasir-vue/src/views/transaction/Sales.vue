@@ -92,27 +92,19 @@
                         </ul>
                     </div>
 
-                    <CCardBody style="overflow-y: auto; flex: 1;">
+                    <CCardBody style="overflow-y: auto; flex: 1;" class="p-0">
                         <div v-if="cart.length === 0" class="text-center text-muted mt-5">
                             <CIcon icon="cil-basket" size="2xl" class="mb-3"/>
                             <p>Keranjang masih kosong</p>
                         </div>
 
                         <div v-else>
-                            <div v-for="(item, index) in cart" :key="index" class="mb-2 position-relative shadow-sm p-2 rounded">
+                            <div v-for="(item, index) in cart" :key="index" class="card m-1 position-relative shadow-sm p-2">
                                 <div class="d-flex justify-content-between mb-2">
-                                    <div>
-                                        <strong>{{ item.name }}</strong>
-                                    </div>
+                                    <div><strong>{{ item.name }}</strong></div>
                                     <div>
                                         <!-- Tombol hapus -->
-                                        <CButton 
-                                            color="danger" 
-                                            size="sm" 
-                                            variant="ghost"
-                                            class="position-absolute top-0 end-0 m-1"
-                                            @click="removeFromCart(index)"
-                                        >
+                                        <CButton color="danger" size="sm" variant="ghost" class="position-absolute top-0 end-0 m-1" @click="removeFromCart(index)">
                                             <CIcon icon="cil-x-circle"></CIcon>
                                         </CButton>
                                     </div>
@@ -128,27 +120,11 @@
                                     <!-- Bagian kanan: qty -->
                                     <div style="width: 40%;">
                                         <div class="input-group input-group-sm">
-                                            <button 
-                                            class="btn btn-outline-secondary" 
-                                            type="button"
-                                            @click="decrementQty(index)"
-                                            :disabled="item.qty <= 1"
-                                            ><CIcon icon="cil-minus"></CIcon></button>
+                                            <button class="btn btn-outline-secondary" type="button" @click="decrementQty(index)" :disabled="item.qty <= 1"><CIcon icon="cil-minus"></CIcon></button>
 
-                                            <input 
-                                            type="text" 
-                                            v-model.number="item.qty" 
-                                            min="1" 
-                                            :max="item.maxStock" 
-                                            class="form-control text-center"
-                                            >
+                                            <input type="text" v-model.number="item.qty" min="1" :max="item.maxStock" class="form-control text-center">
 
-                                            <button 
-                                            class="btn btn-outline-secondary" 
-                                            type="button"
-                                            @click="incrementQty(index)"
-                                            :disabled="item.qty >= item.maxStock"
-                                            >+</button>
+                                            <button class="btn btn-outline-secondary" type="button" @click="incrementQty(index)" :disabled="item.qty >= item.maxStock"><CIcon icon="cil-plus"></CIcon></button>
                                         </div>
 
                                         <!-- Subtotal kanan bawah qty -->
@@ -180,33 +156,37 @@
                         </div>
 
                         <div class="mb-3">
-                        <label class="form-label fw-bold small">Uang Diterima</label>
-                        <money3 
-                            v-model.number="payAmount" 
-                            v-bind="moneyConfig" 
-                            class="form-control form-control text-end fw-bold" 
-                            placeholder="0"
-                            :disabled="paymentMethod !== 'Tunai'" 
-                        ></money3>
+                            <label class="form-label fw-bold small">Uang Diterima</label>
+                            <money3 
+                                v-model.number="payAmount" 
+                                v-bind="moneyConfig" 
+                                class="form-control form-control text-end fw-bold" 
+                                placeholder="0"
+                                :disabled="paymentMethod !== 'Tunai'" 
+                            ></money3>
                         </div>
 
                         <div class="d-flex justify-content-between mb-3" v-if="payAmount > 0">
-                        <span class="">Kembalian:</span>
-                        <span class="fw-bold" :class="changeAmount < 0 ? 'text-danger' : 'text-success'">
-                            {{ formatRupiah(changeAmount) }}
-                        </span>
+                            <span class="">Kembalian:</span>
+                            <span class="fw-bold" :class="changeAmount < 0 ? 'text-danger' : 'text-success'">
+                                {{ formatRupiah(changeAmount) }}
+                            </span>
                         </div>
 
                         <div class="d-grid gap-2">
-                        <CButton 
-                            color="success" 
-                            size="md" 
-                            class="text-white" 
-                            :disabled="cart.length === 0 || payAmount < grandTotal || isProcessing"
-                            @click="processTransaction"
-                        >
-                            {{ isProcessing ? 'Memproses...' : 'BAYAR SEKARANG' }}
-                        </CButton>
+                            <CButton 
+                                color="success" 
+                                size="md" 
+                                class="text-white" 
+                                :disabled="cart.length === 0 || payAmount < grandTotal || isProcessing"
+                                @click="processTransaction"
+                            >
+                                <span v-if="isProcessing">Memproses...</span>
+                                <span v-else>
+                                    <CIcon icon="cil-credit-card" height="15" class="me-1" />
+                                    BAYAR SEKARANG
+                                </span>
+                            </CButton>
                         </div>
                     </CCardFooter>
                 </CCard>
@@ -339,11 +319,11 @@ export default {
         closeListDelay() { setTimeout(() => { this.showCustomerList = false; }, 200); },
         
         addToCart(product) {
-            if (product.stock <= 0) return alert('Stok Habis!');
+            if (product.stock <= 0) return this.$swal.fire({icon: 'error',title: 'Stok Habis!',text: 'Silakan tambah stok terlebih dahulu.'});
             const existingItem = this.cart.find(item => item.id === product.id);
             if (existingItem) {
                 if (existingItem.qty < product.stock) existingItem.qty++;
-                else alert('Stok tidak mencukupi!');
+                else this.$swal.fire({icon: 'error',title: 'Stok tidak mencukupi!',text: 'Silakan tambah stok terlebih dahulu.'});
             } else {
                 this.cart.push({ id: product.id, name: product.name, price: product.price_sell, qty: 1, maxStock: product.stock });
             }
@@ -363,7 +343,16 @@ export default {
         removeFromCart(index) { this.cart.splice(index, 1); },
         
         async processTransaction() {
-            if (!confirm(`Proses transaksi via ${this.paymentMethod}?`)) return;
+            const confirmResult = await this.$swal.fire({
+                title: 'Proses Transaksi?',
+                text: `Total: ${this.formatRupiah(this.payAmount)} via ${this.paymentMethod}`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Bayar Sekarang',
+                cancelButtonText: 'Batal'
+            });
+
+            if (!confirmResult.isConfirmed) return;
 
             this.isProcessing = true;
             try {
@@ -376,7 +365,19 @@ export default {
 
                 const response = await axios.post('/sales', payload);
                 
-                alert(`Transaksi Berhasil!\nMetode: ${this.paymentMethod}\nKembalian: ${this.formatRupiah(response.data.change)}`);
+                await this.$swal.fire({
+                    title: 'Transaksi Berhasil!',
+                    icon: 'success',
+                    html: `
+                        <div class="text-start">
+                            <p><strong>No Invoice:</strong> ${response.data.invoice}</p>
+                            <p><strong>Metode:</strong> ${this.paymentMethod}</p>
+                            <hr>
+                            <h3 class="text-success text-center">Kembalian: ${this.formatRupiah(response.data.change)}</h3>
+                        </div>
+                    `,
+                    confirmButtonText: 'Tutup & Transaksi Baru'
+                });
                 
                 this.cart = [];
                 this.payAmount = 0;
@@ -386,7 +387,7 @@ export default {
                 
             } catch (error) {
                 console.error(error);
-                alert(error.response?.data?.message || 'Transaksi Gagal');
+                this.$swal.fire('Gagal', error.response?.data?.message || 'Transaksi Gagal', 'error');
             } finally {
                 this.isProcessing = false;
             }

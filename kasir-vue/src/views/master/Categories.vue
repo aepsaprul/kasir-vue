@@ -5,43 +5,44 @@
         <CCard class="mb-4">
           <CCardHeader class="d-flex justify-content-between align-items-center">
             <strong>Data Kategori Produk</strong>
-            <CButton color="primary" size="sm" @click="openModal">
-              + Tambah Kategori
-            </CButton>
+            <CButton color="primary" size="sm" @click="openModal"><CIcon icon="cil-plus" height="15"></CIcon> Tambah Kategori</CButton>
           </CCardHeader>
-          <CCardBody>
-            <CTable hover responsive>
-              <CTableHead>
-                <CTableRow>
-                  <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                  <CTableHeaderCell scope="col">Nama Kategori</CTableHeaderCell>
-                  <CTableHeaderCell scope="col">Aksi</CTableHeaderCell>
-                </CTableRow>
-              </CTableHead>
-              <CTableBody>
-                <CTableRow v-for="(item, index) in categories" :key="item.id">
-                  <CTableHeaderCell scope="row">{{ index + 1 }}</CTableHeaderCell>
-                  <CTableDataCell>{{ item.name }}</CTableDataCell>
-                  <CTableDataCell>
-                    <CButton color="warning" size="sm" class="me-2 text-white" @click="editItem(item)">
-                      Edit
-                    </CButton>
-                    <CButton color="danger" size="sm" class="text-white" @click="deleteItem(item.id)">
-                      Hapus
-                    </CButton>
-                  </CTableDataCell>
-                </CTableRow>
-                <CTableRow v-if="categories.length === 0">
-                    <CTableDataCell colspan="3" class="text-center">Belum ada data</CTableDataCell>
-                </CTableRow>
-              </CTableBody>
-            </CTable>
-          </CCardBody>
         </CCard>
+
+        <div v-if="categories.length === 0" class="text-center text-muted py-4">
+          Belum ada data
+        </div>
+
+        <div v-else class="d-flex flex-column gap-1">
+
+          <CCard v-for="(item, index) in categories" :key="item.id" class="shadow-sm">
+            <CCardBody class="d-flex justify-content-between align-items-center">
+
+              <!-- Info Kategori -->
+              <div>
+                <div class="fw-bold">{{ item.name }}</div>
+                <small class="text-muted">Kategori #{{ index + 1 }}</small>
+              </div>
+
+              <!-- Tombol Aksi -->
+              <div class="d-flex gap-2">
+                <CButton color="warning" size="sm" class="text-white" @click="editItem(item)">
+                  <CIcon icon="cil-pencil" size="15" />
+                </CButton>
+
+                <CButton color="danger" size="sm" class="text-white" @click="deleteItem(item.id)">
+                  <CIcon icon="cil-trash" size="15" />
+                </CButton>
+              </div>
+
+            </CCardBody>
+          </CCard>
+
+        </div>
       </CCol>
     </CRow>
 
-    <CModal :visible="showModal" @close="showModal = false">
+    <CModal :visible="showModal" @close="showModal = false" alignment="center">
       <CModalHeader>
         <CModalTitle>{{ isEdit ? 'Edit Kategori' : 'Tambah Kategori' }}</CModalTitle>
       </CModalHeader>
@@ -54,8 +55,8 @@
         </CForm>
       </CModalBody>
       <CModalFooter>
-        <CButton color="secondary" @click="showModal = false">Batal</CButton>
-        <CButton color="primary" @click="saveData">Simpan</CButton>
+        <CButton color="secondary" @click="showModal = false"><CIcon icon="cil-x-circle" size="15"></CIcon> Batal</CButton>
+        <CButton color="primary" @click="saveData"><CIcon icon="cil-save" size="15"></CIcon> Simpan</CButton>
       </CModalFooter>
     </CModal>
   </div>
@@ -68,18 +69,20 @@ export default {
     name: 'Categories',
     data() {
         return {
-        categories: [],
-        showModal: false,
-        isEdit: false,
-        form: {
-            id: null,
-            name: ''
-        }
+          categories: [],
+          showModal: false,
+          isEdit: false,
+          form: {
+              id: null,
+              name: ''
+          }
         };
     },
+
     mounted() {
         this.fetchCategories();
     },
+
     methods: {
         // Ambil data dari Backend
         async fetchCategories() {
@@ -87,25 +90,34 @@ export default {
                 const response = await axios.get('/categories');
                 this.categories = response.data;
             } catch (error) {
-                console.error('Error fetching data:', error);
-                alert('Gagal mengambil data');
+                // console.error('Error fetching data:', error);
+                this.$swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: 'Gagal mengambil data.',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
             }
         },
+
         // Buka Modal Tambah
         openModal() {
             this.isEdit = false;
             this.form = { id: null, name: '' };
             this.showModal = true;
         },
+
         // Buka Modal Edit
         editItem(item) {
             this.isEdit = true;
             this.form = { id: item.id, name: item.name };
             this.showModal = true;
         },
+
         // Simpan Data (Create/Update)
         async saveData() {
-            if(!this.form.name) return alert("Nama kategori harus diisi!");
+            if(!this.form.name) return this.$swal.fire({icon: 'error',title: 'Gagal!',text: 'Data kategori harus diisi!.',timer: 1500,showConfirmButton: false});
 
             try {
                 if (this.isEdit) {
@@ -116,23 +128,63 @@ export default {
                     await axios.post('/categories', { name: this.form.name });
                 }
                 this.showModal = false;
-                this.fetchCategories(); // Refresh tabel
+                this.fetchCategories();
+
+                this.$swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: 'Kategori telah disimpan.',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
             } catch (error) {
-                console.error(error);
-                alert('Gagal menyimpan data');
+                // console.error(error);
+                this.$swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: 'Gagal menyimpan data.',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
             }
         },
+
         // Hapus Data
         async deleteItem(id) {
-            if(confirm('Apakah Anda yakin ingin menghapus kategori ini?')) {
-                try {
-                    await axios.delete(`/categories/${id}`);
-                    this.fetchCategories();
-                } catch (error) {
-                    console.error(error);
-                    alert('Gagal menghapus data');
-                }
-            }
+          this.$swal.fire({
+              title: 'Anda yakin?',
+              text: 'Kategori akan dihapus secara permanen!',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#d33',
+              cancelButtonColor: '#3085d6',
+              confirmButtonText: 'Ya, hapus!',
+              cancelButtonText: 'Batal'
+          }).then(async (result) => {
+              if (result.isConfirmed) {
+                  try {
+                      await axios.delete(`/categories/${id}`);
+                      this.fetchCategories();
+
+                      this.$swal.fire({
+                          icon: 'success',
+                          title: 'Berhasil!',
+                          text: 'Kategori telah dihapus.',
+                          timer: 1500,
+                          showConfirmButton: false
+                      });
+
+                  } catch (error) {
+                      this.$swal.fire({
+                          icon: 'error',
+                          title: 'Kategori Tidak Bisa Dihapus!',
+                          html: `
+                              <p>Karena Data digunakan dihalaman lain.</p>
+                          `
+                      });
+                  }
+              }
+          });
         }
     }
 };

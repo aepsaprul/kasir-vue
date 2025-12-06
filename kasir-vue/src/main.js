@@ -10,6 +10,9 @@ import CoreuiVue from '@coreui/vue'
 import CIcon from '@coreui/icons-vue'
 import { iconsSet as icons } from '@/assets/icons'
 
+import Swal from 'sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
+
 axios.defaults.baseURL = 'http://localhost:5000/api';
 axios.interceptors.request.use(config => {
     const token = localStorage.getItem('token');
@@ -50,6 +53,19 @@ app.use(CoreuiVue)
 app.provide('icons', icons)
 app.component('CIcon', CIcon)
 app.component('money3', Money3Component);
+app.config.globalProperties.$swal = Swal;
+const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+    }
+});
+app.config.globalProperties.$toast = Toast;
 app.config.globalProperties.$fileURL = fileBaseUrl;
 
 app.mount('#app')

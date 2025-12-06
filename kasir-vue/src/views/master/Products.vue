@@ -21,57 +21,53 @@
                     </CCardBody>
                 </CCard>
 
-                <div class="row g-3">
-                            <div 
-                                class="col-12" 
-                                v-for="item in filteredProducts" 
-                                :key="item.id"
-                            >
-                                <div class="card h-100 shadow-sm product-card">
-                                    <div class="d-flex justify-content-between">
-                                        <div class="d-flex justify-content-center align-items-center" style="width: 20%;">
-                                            <!-- Gambar Produk -->
-                                            <img 
-                                                v-if="item.image"
-                                                :src="this.$fileURL + item.image"
-                                                class="card-img-top product-img p-3"
-                                            />
-                                            <div v-else class="no-img-box d-flex align-items-center justify-content-center">
-                                                No Image
-                                            </div>
+                <div class="row g-1">
+                    <div class="col-12" v-for="item in filteredProducts" :key="item.id">
+                        <div class="card h-100 shadow-sm product-card">
+                            <div class="d-flex justify-content-between">
+                                <div class="d-flex justify-content-center align-items-center" style="width: 20%;">
+                                    <!-- Gambar Produk -->
+                                    <img 
+                                        v-if="item.image"
+                                        :src="this.$fileURL + item.image"
+                                        class="card-img-top product-img p-3"
+                                    />
+                                    <div v-else class="no-img-box d-flex align-items-center justify-content-center">
+                                        No Image
+                                    </div>
+                                </div>
+                                <div style="width: 80%;">
+                                    <div class="card-body p-3">
+                                        <h6 class="fw-bold mb-1">{{ item.name }}</h6>
+
+                                        <div class="text-muted small mb-2 d-flex justify-content-between">
+                                            <div><span class="fw-bold">{{ item.code }}</span> <span class="badge bg-light text-dark border">{{ item.category_name }}</span></div>
+                                            <div class="text-end"><span class="fw-bold">{{ formatRupiah(item.price_sell) }}</span></div>
                                         </div>
-                                        <div style="width: 80%;">
-                                            <div class="card-body p-3">
-                                                <h6 class="fw-bold mb-1">{{ item.name }}</h6>
-        
-                                                <div class="text-muted small mb-2 d-flex justify-content-between">
-                                                    <div><span class="fw-bold">{{ item.code }}</span> <span class="badge bg-light text-dark border">{{ item.category_name }}</span></div>
-                                                    <div class="text-end"><span class="fw-bold">{{ formatRupiah(item.price_sell) }}</span></div>
-                                                </div>
-        
-                                                <div class="d-flex justify-content-between align-items-end mb-2">
-                                                    <div>
-                                                        <small class="text-muted">Stok</small><br>
-                                                        <span :class="item.stock <= item.min_stock ? 'text-danger fw-bold' : 'text-success fw-bold'">
-                                                            {{ item.stock }}
-                                                        </span>
-                                                        <small class="text-muted"> / Min {{ item.min_stock }} {{ item.unit_name }}</small>
-                                                    </div>
-                                                    <div>
-                                                        <CButton color="warning" size="sm" class="me-1 text-white" @click="editItem(item)"><CIcon icon="cil-pencil" height="18"/></CButton>
-                                                        <CButton color="danger" size="sm" class="text-white" @click="deleteItem(item.id)"><CIcon icon="cil-trash" height="18"/></CButton>
-                                                    </div>
-                                                </div>
+
+                                        <div class="d-flex justify-content-between align-items-end mb-2">
+                                            <div>
+                                                <small class="text-muted">Stok</small><br>
+                                                <span :class="item.stock <= item.min_stock ? 'text-danger fw-bold' : 'text-success fw-bold'">
+                                                    {{ item.stock }}
+                                                </span>
+                                                <small class="text-muted"> / Min {{ item.min_stock }} {{ item.unit_name }}</small>
+                                            </div>
+                                            <div>
+                                                <CButton color="warning" size="sm" class="me-1 text-white" @click="editItem(item)"><CIcon icon="cil-pencil" height="15"/></CButton>
+                                                <CButton color="danger" size="sm" class="text-white" @click="deleteItem(item.id)"><CIcon icon="cil-trash" height="15"/></CButton>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
-                            <div v-if="filteredProducts.length === 0" class="col-12 text-center py-4 text-muted">
-                                {{ searchKeyword ? 'Produk tidak ditemukan' : 'Belum ada data produk' }}
-                            </div>
                         </div>
+                    </div>
+
+                    <div v-if="filteredProducts.length === 0" class="col-12 text-center py-4 text-muted">
+                        {{ searchKeyword ? 'Produk tidak ditemukan' : 'Belum ada data produk' }}
+                    </div>
+                </div>
             </CCol>
         </CRow>
 
@@ -88,23 +84,23 @@
                                 style="width: 100px; height: 100px; object-fit: cover;" />
                         </div>
                         <div class="flex-grow-1">
-                            <label class="form-label">Foto Produk</label>
+                            <label class="form-label"><span class="text-danger">*</span>Foto Produk</label>
                             <input type="file" @change="handleFileChange" class="form-control" accept="image/*">
                             <div class="form-text">Biarkan kosong jika tidak ingin mengubah gambar.</div>
                         </div>
                     </CCol>
 
                     <CCol md="4">
-                        <CFormLabel>Kode Barang</CFormLabel>
+                        <CFormLabel><span class="text-danger">*</span>Kode Barang</CFormLabel>
                         <CFormInput v-model="form.code" placeholder="Scan..." />
                     </CCol>
                     <CCol md="8">
-                        <CFormLabel>Nama Produk</CFormLabel>
+                        <CFormLabel><span class="text-danger">*</span>Nama Produk</CFormLabel>
                         <CFormInput v-model="form.name" />
                     </CCol>
 
                     <CCol md="6" class="position-relative">
-                        <CFormLabel>Kategori</CFormLabel>
+                        <CFormLabel><span class="text-danger">*</span>Kategori</CFormLabel>
                         <CFormInput 
                             type="text" v-model="categorySearch" placeholder="Cari kategori..." 
                             @focus="showCategoryList = true" @blur="closeListDelay('cat')" autocomplete="off"
@@ -117,7 +113,7 @@
                         </ul>
                     </CCol>
                     <CCol md="6" class="position-relative">
-                        <CFormLabel>Satuan</CFormLabel>
+                        <CFormLabel><span class="text-danger">*</span>Satuan</CFormLabel>
                         <CFormInput 
                             type="text" v-model="unitSearch" placeholder="Cari satuan..." 
                             @focus="showUnitList = true" @blur="closeListDelay('unit')" autocomplete="off"
@@ -133,20 +129,20 @@
                     <CCol md="12"><hr class="my-2"/></CCol>
 
                     <CCol md="6">
-                        <CFormLabel>Harga Beli</CFormLabel>
+                        <CFormLabel><span class="text-danger">*</span>Harga Beli</CFormLabel>
                         <money3 v-model.number="form.price_buy" v-bind="moneyConfig" class="form-control"></money3>
                     </CCol>
                     <CCol md="6">
-                        <CFormLabel>Harga Jual</CFormLabel>
+                        <CFormLabel><span class="text-danger">*</span>Harga Jual</CFormLabel>
                         <money3 v-model.number="form.price_sell" v-bind="moneyConfig" class="form-control"></money3>
                     </CCol>
                     
                     <CCol md="6">
-                        <CFormLabel>Stok Awal</CFormLabel>
+                        <CFormLabel><span class="text-danger">*</span>Stok Awal</CFormLabel>
                         <CFormInput type="number" v-model="form.stock" />
                     </CCol>
                     <CCol md="6">
-                        <CFormLabel class="text-danger">Min Stok Alert</CFormLabel>
+                        <CFormLabel class="text-danger"><span class="text-danger">*</span>Min Stok Alert</CFormLabel>
                         <CFormInput type="number" v-model="form.min_stock" />
                     </CCol>
 
@@ -164,8 +160,8 @@
                 </CForm>
             </CModalBody>
             <CModalFooter>
-                <CButton color="secondary" @click="showModal = false">Batal</CButton>
-                <CButton color="primary" @click="saveData">Simpan Produk</CButton>
+                <CButton color="secondary" @click="showModal = false"><CIcon icon="cil-x-circle" size="15"></CIcon> Batal</CButton>
+                <CButton color="primary" @click="saveData"><CIcon icon="cil-save" size="15"></CIcon> Simpan Produk</CButton>
             </CModalFooter>
         </CModal>
     </div>
@@ -178,31 +174,32 @@ export default {
     name: 'Products',
     data() {
         return {
-        products: [],
-        categories: [],
-        units: [],
-        showModal: false,
-        isEdit: false,
-        
-        // LOGIC PENCARIAN PRODUK BARU
-        searchKeyword: '', 
+            products: [],
+            categories: [],
+            units: [],
+            showModal: false,
+            isEdit: false,
+            
+            // LOGIC PENCARIAN PRODUK BARU
+            searchKeyword: '', 
 
-        // Data Form
-        form: {
-            id: null, code: '', name: '', category_id: null, unit_id: null,
-            price_buy: 0, price_sell: 0, price_wholesale: 0, min_wholesale_qty: 0, 
-            stock: 0, min_stock: 5
-        },
-        selectedFile: null,
-        imagePreview: null,
+            // Data Form
+            form: {
+                id: null, code: '', name: '', category_id: null, unit_id: null,
+                price_buy: 0, price_sell: 0, price_wholesale: 0, min_wholesale_qty: 0, 
+                stock: 0, min_stock: 5
+            },
+            selectedFile: null,
+            imagePreview: null,
 
-        // Autocomplete Kategori/Satuan
-        categorySearch: '', showCategoryList: false,
-        unitSearch: '', showUnitList: false,
-        
-        moneyConfig: { prefix: 'Rp ', suffix: '', thousands: '.', decimal: ',', precision: 0, disableNegative: true }
+            // Autocomplete Kategori/Satuan
+            categorySearch: '', showCategoryList: false,
+            unitSearch: '', showUnitList: false,
+            
+            moneyConfig: { prefix: 'Rp ', suffix: '', thousands: '.', decimal: ',', precision: 0, disableNegative: true }
         };
     },
+
     computed: {
         // --- COMPUTED PROPERTY BARU UNTUK FILTER PRODUK ---
         filteredProducts() {
@@ -224,20 +221,24 @@ export default {
             return this.units.filter(u => u.name.toLowerCase().includes(this.unitSearch.toLowerCase()));
         }
     },
+
     mounted() {
         this.fetchProducts();
         this.fetchDropdowns();
     },
+
     methods: {
         formatRupiah(val) {
             return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(val);
         },
+
         async fetchProducts() {
-        try {
-            const response = await axios.get('/products');
-            this.products = response.data;
-        } catch (error) { console.error(error); }
+            try {
+                const response = await axios.get('/products');
+                this.products = response.data;
+            } catch (error) { console.error(error); }
         },
+
         async fetchDropdowns() {
             try {
                 const [cat, unit] = await Promise.all([axios.get('/categories'), axios.get('/units')]);
@@ -250,9 +251,11 @@ export default {
         selectCategory(item) {
             this.form.category_id = item.id; this.categorySearch = item.name; this.showCategoryList = false;
         },
+
         selectUnit(item) {
             this.form.unit_id = item.id; this.unitSearch = item.name; this.showUnitList = false;
         },
+
         closeListDelay(type) {
             setTimeout(() => {
                 if(type === 'cat') this.showCategoryList = false;
@@ -299,7 +302,7 @@ export default {
         },
 
         async saveData() {
-            if(!this.form.name || !this.form.category_id) return alert("Lengkapi data!");
+            if(!this.form.name || !this.form.category_id) return this.$swal.fire({icon: 'error',title: 'Gagal!',text: 'Lengkapi data yg bertanda bintang!',timer: 1500,showConfirmButton: false});
             
             const formData = new FormData();
             Object.keys(this.form).forEach(key => {
@@ -321,19 +324,60 @@ export default {
                 }
                 this.showModal = false;
                 this.fetchProducts();
-                alert('Berhasil disimpan!');
+                
+                this.$swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: 'Produk telah ditambahkan.',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
             } catch (error) {
-                console.error(error);
-                alert(error.response?.data?.message || 'Gagal menyimpan');
+                // console.error(error);
+                this.$swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: 'Gagal menyimpan data.',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
             }
         },
+
         async deleteItem(id) {
-            if(confirm('Hapus produk ini?')) {
-                try {
-                    await axios.delete(`/products/${id}`);
-                    this.fetchProducts();
-                } catch (error) { alert('Gagal hapus'); }
-            }
+            this.$swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Data yang dihapus tidak bisa dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        await axios.delete(`/products/${id}`);
+                        this.fetchProducts();
+                        
+                        this.$swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: 'Produk telah dihapus.',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    } catch (error) { 
+                        this.$swal.fire({
+                            icon: 'error',
+                            title: 'Produk Tidak Bisa Dihapus!',
+                            html: `
+                                <p>Karena Data digunakan dihalaman lain.</p>
+                            `
+                        });
+                    }
+                }
+            });
         }
     }
 };

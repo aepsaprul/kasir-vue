@@ -62,18 +62,16 @@
                           class="form-control-custom"
                         />
                       </CInputGroup>
-                      <div class="form-text">Masukkan email yang terdaftar</div>
                     </div>
 
                     <!-- Password Input -->
                     <div class="form-group mb-4">
                       <div class="d-flex justify-content-between align-items-center mb-2">
                         <label for="password" class="form-label">Password</label>
-                        <a href="#" class="text-decoration-none small forgot-password-link">Lupa password?</a>
                       </div>
                       <CInputGroup class="input-group-custom">
                         <CInputGroupText class="input-group-prepend">
-                          <CIcon icon="cil-lock-locked" />
+                          <CIcon icon="cil-shield-alt" />
                         </CInputGroupText>
                         <CFormInput
                           id="password"
@@ -89,7 +87,7 @@
                           @click="showPassword = !showPassword"
                           style="cursor: pointer;"
                         >
-                          <CIcon :icon="showPassword ? 'cil-eye' : 'cil-eye-slash'" />
+                          <CIcon :icon="showPassword ? 'cil-lock-unlocked' : 'cil-lock-locked'" />
                         </CInputGroupText>
                       </CInputGroup>
                     </div>
@@ -126,29 +124,6 @@
                           Masuk
                         </span>
                       </CButton>
-
-                      <!-- Divider -->
-                      <div class="divider my-4">
-                        <span class="divider-text">atau masuk dengan</span>
-                      </div>
-
-                      <!-- Social Login Options (Optional) -->
-                      <div class="social-login text-center">
-                        <CButton color="outline-secondary" class="social-btn me-2" @click.prevent>
-                          <CIcon icon="cib-google" class="me-2" />
-                          Google
-                        </CButton>
-                        <CButton color="outline-secondary" class="social-btn" @click.prevent>
-                          <CIcon icon="cib-facebook" class="me-2" />
-                          Facebook
-                        </CButton>
-                      </div>
-
-                      <!-- Register Link -->
-                      <div class="text-center mt-4">
-                        <span class="text-muted">Belum punya akun?</span>
-                        <a href="#" class="text-decoration-none register-link ms-1">Daftar disini</a>
-                      </div>
                     </div>
                   </CForm>
                 </div>
@@ -191,27 +166,10 @@
                       </div>
                     </div>
 
-                    <!-- Features List -->
-                    <div class="store-features mt-4">
-                      <h5 class="mb-3">Fitur Utama</h5>
-                      <ul class="feature-list list-unstyled">
-                        <li class="feature-item mb-2">
-                          <CIcon icon="cil-check" class="me-2" /> Manajemen Produk
-                        </li>
-                        <li class="feature-item mb-2">
-                          <CIcon icon="cil-check" class="me-2" /> Laporan Penjualan
-                        </li>
-                        <li class="feature-item">
-                          <CIcon icon="cil-check" class="me-2" /> Transaksi Real-time
-                        </li>
-                      </ul>
-                    </div>
-
                     <!-- Footer Store Info -->
                     <div class="store-footer mt-5 pt-4 border-top border-white-50">
-                      <p class="small opacity-75">
-                        © {{ new Date().getFullYear() }} {{ settings.store_name || 'Aplikasi Kasir' }}. All rights reserved.
-                      </p>
+                      <p class="small opacity-75">© {{ new Date().getFullYear() }} {{ settings.store_name || 'Aplikasi Kasir' }}. All rights reserved.</p>
+                      <p class="small opacity-75">Powered By <a href="https://shaantech.co.id/" target="_blank" class="text-white">Shaantech</a></p>
                     </div>
                   </div>
                 </div>
@@ -254,13 +212,20 @@ export default {
       email: '',
       password: '',
       errorMessage: '',
+      showPassword: false,
       settings: { store_name: '', address: '', logo: '', phone: '', email: '' }
     }
   },
+  
   mounted() {
       this.fetchSettings();
   },
+
   methods: {
+    togglePassword() {
+      this.showPassword = !this.showPassword; // <-- Fungsi untuk toggle
+    },
+
     async fetchSettings() {
         // Ambil data setting secara publik (tanpa token)
         try {

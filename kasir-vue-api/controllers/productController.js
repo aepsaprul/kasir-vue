@@ -110,14 +110,32 @@ exports.update = async (req, res) => {
 exports.delete = async (req, res) => {
     const { id } = req.params;
     try {
-        // Hapus file gambar dulu sebelum hapus data DB
+        // Cek apakah produk ada
         const [rows] = await db.query('SELECT image FROM products WHERE id = ?', [id]);
-        if (rows[0] && rows[0].image) {
-            const oldPath = path.join(__dirname, '../uploads', rows[0].image);
-            if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+        if (!rows.length) {
+            return res.status(404).json({ message: 'Produk tidak ditemukan' });
         }
 
-        await db.query('DELETE FROM products WHERE id = ?', [id]);
+        const imageName = rows[0].image;
+
+        // --- HAPUS DATA DI DATABASE DULU ---
+        try {
+            await db.query('DELETE FROM products WHERE id = ?', [id]);
+        } catch (dbError) {
+            // Jika gagal karena relational constraint
+            return res.status(400).json({
+                message: 'Produk tidak bisa dihapus karena sedang digunakan di tabel lain.'
+            });
+        }
+
+        // --- BARU HAPUS FILE GAMBAR ---
+        if (imageName) {
+            const imagePath = path.join(__dirname, '../uploads', imageName);
+            if (fs.existsSync(imagePath)) {
+                fs.unlinkSync(imagePath);
+            }
+        }
+
         res.json({ message: 'Produk berhasil dihapus' });
     } catch (error) {
         res.status(500).json({ message: error.message });

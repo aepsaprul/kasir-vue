@@ -11,55 +11,55 @@
                 <input type="file" ref="fileInput" @change="handleFileChange" class="form-control" accept="image/*">
             </div>
             <CButton color="primary" @click="uploadAvatar" :disabled="!selectedFile">
-                Upload Avatar
+                <CIcon icon="cil-cloud-upload"></CIcon> Upload Avatar
             </CButton>
             </CCardBody>
         </CCard>
         </CCol>
 
         <CCol md="8">
-        <CCard class="mb-4">
-            <CCardHeader>Edit Profil</CCardHeader>
-            <CCardBody>
-            <CForm @submit.prevent="updateProfile">
-                
-                <h6 class="mb-3 text-muted">Informasi Dasar</h6>
-                <div class="mb-3">
-                <label class="form-label">Nama Lengkap</label>
-                <CFormInput v-model="form.name" required />
-                </div>
-                <div class="mb-3">
-                <label class="form-label">Email</label>
-                <CFormInput v-model="form.email" type="email" required />
-                </div>
+            <CCard class="mb-4">
+                <CCardHeader>Edit Profil</CCardHeader>
+                <CCardBody>
+                    <CForm @submit.prevent="updateProfile">
+                        
+                        <h6 class="mb-3 text-muted">Informasi Dasar</h6>
+                        <div class="mb-3">
+                            <label class="form-label">Nama Lengkap</label>
+                            <CFormInput v-model="form.name" required />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <CFormInput v-model="form.email" type="email" required />
+                        </div>
 
-                <hr class="my-4">
+                        <hr class="my-4">
 
-                <h6 class="mb-3 text-muted">Ganti Password (Opsional)</h6>
-                <CAlert color="info" class="d-flex align-items-center">
-                    <CIcon icon="cil-info" class="flex-shrink-0 me-2" width="24" height="24" />
-                    <div>Kosongkan jika tidak ingin mengubah password.</div>
-                </CAlert>
+                        <h6 class="mb-3 text-muted">Ganti Password (Opsional)</h6>
+                        <CAlert color="info" class="d-flex align-items-center">
+                            <CIcon icon="cil-info" class="flex-shrink-0 me-2" width="24" height="24" />
+                            <div>Kosongkan jika tidak ingin mengubah password.</div>
+                        </CAlert>
 
-                <div class="mb-3">
-                <label class="form-label">Password Lama</label>
-                <CFormInput v-model="form.password" type="password" placeholder="Wajib diisi jika ingin ganti password baru" />
-                </div>
-                <div class="mb-3">
-                <label class="form-label">Password Baru</label>
-                <CFormInput v-model="form.new_password" type="password" />
-                </div>
-                <div class="mb-3">
-                <label class="form-label">Konfirmasi Password Baru</label>
-                <CFormInput v-model="form.confirm_password" type="password" />
-                </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password Lama</label>
+                            <CFormInput v-model="form.password" type="password" placeholder="Wajib diisi jika ingin ganti password baru" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password Baru</label>
+                            <CFormInput v-model="form.new_password" type="password" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Konfirmasi Password Baru</label>
+                            <CFormInput v-model="form.confirm_password" type="password" />
+                        </div>
 
-                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <CButton color="success" type="submit" class="text-white px-4">Simpan Perubahan</CButton>
-                </div>
-            </CForm>
-            </CCardBody>
-        </CCard>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <CButton color="success" type="submit" class="text-white px-4"><CIcon icon="cil-save"></CIcon> Simpan Perubahan</CButton>
+                        </div>
+                    </CForm>
+                </CCardBody>
+            </CCard>
         </CCol>
     </CRow>
 </template>
@@ -100,10 +100,10 @@ export default {
         // 1. Logic Ganti Text (Nama/Pass)
         async updateProfile() {
             if (this.form.new_password && this.form.new_password !== this.form.confirm_password) {
-                return alert("Konfirmasi password baru tidak cocok!");
+                return this.$toast.fire({icon: 'error', title: 'Konfirmasi password baru tidak cocok!'});
             }
             if (this.form.new_password && !this.form.password) {
-                return alert("Masukkan password lama untuk verifikasi!");
+                return this.$toast.fire({icon: 'error', title: 'Masukkan password lama untuk verifikasi!'});
             }
 
             try {
@@ -114,19 +114,29 @@ export default {
                 const updatedUser = { ...currentUser, ...response.data.user };
                 localStorage.setItem('user', JSON.stringify(updatedUser));
                 
-                alert('Profil berhasil diperbarui!');
-                
                 // Bersihkan field password
                 this.form.password = '';
                 this.form.new_password = '';
                 this.form.confirm_password = '';
                 
                 // Reload halaman agar Header mengupdate nama (opsional)
-                window.location.reload();
+                this.$toast.fire({
+                    icon: 'success',
+                    title: 'Profil berhasil diperbarui!',
+                    timer: 1500,
+                    didClose: () => {
+                        window.location.reload();
+                    }
+                });
 
             } catch (error) {
                 console.error(error);
-                alert(error.response?.data?.message || 'Gagal update profil');
+                
+                this.$swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: error.response?.data?.message || 'Gagal update profil',
+                });
             }
         },
 
@@ -153,15 +163,24 @@ export default {
                 const user = JSON.parse(localStorage.getItem('user'));
                 user.avatar = response.data.avatar_url;
                 localStorage.setItem('user', JSON.stringify(user));
-
-                alert('Foto profil berhasil diganti!');
                 
                 // Reload agar Header di pojok kanan atas berubah gambarnya
-                window.location.reload();
-
+                this.$toast.fire({
+                    icon: 'success',
+                    title: 'Foto profil berhasil diganti!',
+                    timer: 1500,
+                    didClose: () => {
+                        window.location.reload();
+                    }
+                });
             } catch (error) {
                 console.error(error);
-                alert('Gagal upload gambar');
+                
+                this.$swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: error.response?.data?.message || 'Gagal upload gambar',
+                });
             }
         }
     }
