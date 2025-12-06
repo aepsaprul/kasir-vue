@@ -21,7 +21,7 @@
                     <div class="login-logo mb-3">
                       <div v-if="settings.logo" class="store-logo mb-3">
                         <img 
-                          :src="`http://localhost:5000/uploads/${settings.logo}`" 
+                          :src="$fileURL + settings.logo" 
                           alt="Store Logo" 
                           class="img-fluid"
                           style="max-height: 50px;"
@@ -211,6 +211,7 @@ export default {
     return {
       email: '',
       password: '',
+      rememberMe: false,
       errorMessage: '',
       showPassword: false,
       settings: { store_name: '', address: '', logo: '', phone: '', email: '' }
@@ -231,7 +232,7 @@ export default {
         try {
             // Note: Pastikan di axios global login page tidak mengirim token yang salah/kadaluarsa
             // Atau gunakan axios instance baru. Tapi biasanya endpoint GET /settings kita buat public.
-            const response = await axios.get('http://localhost:5000/api/settings');
+            const response = await axios.get('/settings');
             this.settings = response.data;
         } catch (e) {
             console.error('Gagal load setting', e);
@@ -242,9 +243,10 @@ export default {
         this.errorMessage = '' // Reset error
         
         // Panggil API Backend
-        const response = await axios.post('http://localhost:5000/api/auth/login', {
+        const response = await axios.post('/auth/login', {
           email: this.email,
-          password: this.password
+          password: this.password,
+          remember_me: this.rememberMe
         })
 
         // Jika sukses

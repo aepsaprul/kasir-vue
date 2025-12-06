@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 exports.login = async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, remember_me } = req.body;
 
     try {
         // 1. Cari user berdasarkan email
@@ -22,11 +22,13 @@ exports.login = async (req, res) => {
             return res.status(400).json({ message: 'Password salah' });
         }
 
+        const tokenDuration = remember_me ? '30d' : '1m';
+
         // 3. Buat Token (JWT)
         const token = jwt.sign(
             { id: user.id, role: user.role }, 
             process.env.JWT_SECRET, 
-            { expiresIn: '1d' } // Token berlaku 1 hari
+            { expiresIn: tokenDuration } // Token berlaku 1 hari
         );
 
         // 4. Kirim respon sukses
