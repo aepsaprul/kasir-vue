@@ -22,7 +22,7 @@ exports.login = async (req, res) => {
             return res.status(400).json({ message: 'Password salah' });
         }
 
-        const tokenDuration = remember_me ? '30d' : '1m';
+        const tokenDuration = remember_me ? '30d' : '1d';
 
         // 3. Buat Token (JWT)
         const token = jwt.sign(

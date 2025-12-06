@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 05 Des 2025 pada 11.27
+-- Waktu pembuatan: 07 Des 2025 pada 00.18
 -- Versi server: 10.4.32-MariaDB
 -- Versi PHP: 8.2.12
 
@@ -38,12 +38,11 @@ CREATE TABLE `categories` (
 
 INSERT INTO `categories` (`id`, `name`) VALUES
 (1, 'Sembako'),
-(2, 'Bahan Kue'),
 (3, 'Bumbu Dapur'),
-(4, 'Deterjen'),
-(5, 'Makanan Instan'),
 (6, 'Kopi'),
-(7, 'Camilan');
+(7, 'Camilan'),
+(8, 'Non Kopi'),
+(9, 'Susu');
 
 -- --------------------------------------------------------
 
@@ -65,7 +64,8 @@ CREATE TABLE `customers` (
 
 INSERT INTO `customers` (`id`, `name`, `phone`, `address`, `created_at`) VALUES
 (1, 'Pak Budi', '0812345', 'RT 002 RW 003', '2025-12-02 09:17:11'),
-(2, 'Pak Aep', '0899999', 'Jl Melati No 1', '2025-12-02 09:32:23');
+(2, 'Pak Aep', '0899999', 'Jl Melati No 1', '2025-12-02 09:32:23'),
+(3, 'Ibu Tetangga', '0812345678', 'Kp. Pasirjati No. 5', '2025-12-06 08:45:13');
 
 -- --------------------------------------------------------
 
@@ -109,11 +109,12 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `code`, `name`, `category_id`, `unit_id`, `price_buy`, `price_sell`, `price_wholesale`, `min_wholesale_qty`, `stock`, `min_stock`, `image`, `created_at`) VALUES
-(1, '123456', 'Roti Bakar', 7, 7, 18000, 28000, 0, 0, 50, 25, 'product-1764929555487.png', '2025-12-02 03:43:08'),
+(1, '123456', 'Roti Bakar', 7, 7, 18000, 28000, 0, 0, 69, 25, 'product-1764929555487.png', '2025-12-02 03:43:08'),
 (2, '1234565', 'Kentang Goreng', 7, 7, 10000, 25000, 0, 0, 25, 20, 'product-1764929497680.png', '2025-12-02 04:36:53'),
 (3, '54321', 'Espresso', 3, 8, 15000, 23000, 0, 0, 27, 20, 'product-1764905637054.png', '2025-12-02 05:04:53'),
-(4, 'kop-001', 'Cappucino', 6, 8, 15000, 25000, 0, 0, 19, 10, 'product-1764905626132.png', '2025-12-04 09:40:14'),
-(5, 'kop-002', 'Kopi Hitam', 6, 8, 10000, 20000, 0, 0, 34, 10, 'product-1764905484802.png', '2025-12-04 22:17:07');
+(4, 'kop-001', 'Cappucino', 6, 8, 15000, 25000, 0, 0, 15, 10, 'product-1765060559186.png', '2025-12-04 09:40:14'),
+(5, 'kop-002', 'Kopi Hitam', 6, 8, 10000, 20000, 0, 0, 34, 10, 'product-1765060569544.png', '2025-12-04 22:17:07'),
+(7, '4433222', 'Cireng', 7, 7, 10000, 12000, 0, 0, 30, 5, 'product-1764997736900.png', '2025-12-06 05:08:56');
 
 -- --------------------------------------------------------
 
@@ -137,7 +138,10 @@ CREATE TABLE `purchases` (
 INSERT INTO `purchases` (`id`, `invoice_no`, `supplier_id`, `user_id`, `total_amount`, `created_at`) VALUES
 (1, 'PO-1234567', 2, 1, 670000, '2025-12-02 10:12:34'),
 (2, 'INV-12343312', 1, 1, 9000, '2025-12-04 09:42:01'),
-(3, 'INV-1234444444', 2, 1, 250000, '2025-12-05 10:19:31');
+(3, 'INV-1234444444', 2, 1, 250000, '2025-12-05 10:19:31'),
+(4, 'BUY-1765017699920', 6, 1, 100000, '2025-12-06 10:41:39'),
+(5, 'BUY-1765017724429', 6, 1, 225000, '2025-12-06 10:42:04'),
+(6, 'INV-333333', 6, 1, 380000, '2025-12-06 11:15:18');
 
 -- --------------------------------------------------------
 
@@ -163,7 +167,12 @@ INSERT INTO `purchase_items` (`id`, `purchase_id`, `product_id`, `qty`, `price_b
 (2, 1, 3, 100, 300, 30000),
 (3, 2, 2, 30, 300, 9000),
 (4, 3, 5, 10, 10000, 100000),
-(5, 3, 4, 10, 15000, 150000);
+(5, 3, 4, 10, 15000, 150000),
+(6, 4, 7, 10, 10000, 100000),
+(7, 5, 4, 15, 15000, 225000),
+(8, 6, 5, 1, 10000, 10000),
+(9, 6, 1, 20, 18000, 360000),
+(10, 6, 7, 1, 10000, 10000);
 
 -- --------------------------------------------------------
 
@@ -201,7 +210,11 @@ INSERT INTO `sales` (`id`, `invoice_no`, `user_id`, `customer_id`, `total_amount
 (8, 'INV-1764918389067', 1, NULL, 10000, 0, 10000, 10000, 0, 'Tunai', 'lunas', '2025-12-05 07:06:29'),
 (9, 'INV-1764919092135', 1, NULL, 1107500, 0, 1107500, 1107500, 0, 'Transfer', 'lunas', '2025-12-05 07:18:12'),
 (10, 'INV-1764929185035', 1, 1, 4522500, 0, 4522500, 4800000, 277500, 'Tunai', 'lunas', '2025-12-05 10:06:25'),
-(11, 'INV-1764929894662', 1, NULL, 254000, 0, 254000, 260000, 6000, 'Tunai', 'lunas', '2025-12-05 10:18:14');
+(11, 'INV-1764929894662', 1, NULL, 254000, 0, 254000, 260000, 6000, 'Tunai', 'lunas', '2025-12-05 10:18:14'),
+(12, 'INV-1764998535488', 1, NULL, 60000, 0, 60000, 60000, 0, 'QRIS', 'lunas', '2025-12-06 05:22:15'),
+(13, 'INV-1765001932837', 1, NULL, 25000, 0, 25000, 25000, 0, 'Transfer', 'lunas', '2025-12-06 06:18:52'),
+(14, 'INV-1765013026210', 1, NULL, 25000, 0, 25000, 25000, 0, 'QRIS', 'lunas', '2025-12-06 09:23:46'),
+(15, 'INV-1765013091745', 1, NULL, 425000, 0, 425000, 425000, 0, 'QRIS', 'lunas', '2025-12-06 09:24:51');
 
 -- --------------------------------------------------------
 
@@ -246,7 +259,13 @@ INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `qty`, `price`, `subtot
 (21, 10, 4, 5, 900000, 4500000),
 (22, 11, 5, 3, 20000, 60000),
 (23, 11, 4, 5, 25000, 125000),
-(24, 11, 3, 3, 23000, 69000);
+(24, 11, 3, 3, 23000, 69000),
+(25, 12, 7, 1, 12000, 12000),
+(26, 12, 1, 1, 28000, 28000),
+(27, 12, 5, 1, 20000, 20000),
+(28, 13, 4, 1, 25000, 25000),
+(29, 14, 4, 1, 25000, 25000),
+(30, 15, 4, 17, 25000, 425000);
 
 -- --------------------------------------------------------
 
@@ -268,7 +287,7 @@ CREATE TABLE `settings` (
 --
 
 INSERT INTO `settings` (`id`, `store_name`, `email`, `phone`, `address`, `logo`) VALUES
-(1, 'Coffee Shop', 'admin@toko.com', '08123456789', 'Jl. Jendral Sudirman No. 1', 'logo-1764930023738.png');
+(1, 'Coffee Shop', 'admin@toko.com', '08123456789', 'Jl. Jendral Sudirman No. 1', 'logo-1764999085792.jpg');
 
 -- --------------------------------------------------------
 
@@ -319,7 +338,8 @@ INSERT INTO `suppliers` (`id`, `name`, `phone`, `address`, `created_at`) VALUES
 (2, 'PT Indofood Fortuna Makmur', '123456', 'tes', '2025-12-02 09:59:19'),
 (3, 'PT Mayora Indah Tbk', '2234567', 'tes', '2025-12-02 09:59:37'),
 (4, 'PT Kino Indonesia Tbk', '5678', 'tes', '2025-12-02 09:59:52'),
-(5, 'PD. Dua Bintang Snack', '545453', 'tes', '2025-12-02 10:00:05');
+(5, 'PD. Dua Bintang Snack', '0812345678', 'Jl. Merdeka Barat No. 10', '2025-12-02 10:00:05'),
+(6, 'PT Distributor Segalanya', '089999999999', 'Jl. Raya Sukamaju No. 12', '2025-12-06 09:46:08');
 
 -- --------------------------------------------------------
 
@@ -367,7 +387,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `avatar`, `created_at`) VALUES
-(1, 'Admin', 'admin@email.com', '$2b$10$0Ihi0Gt0Zpede7WpXxkQ2ONKY9mQYrTkz2kv0CkvOCYVjK5jWWU2a', 'admin', 'avatar-1-1764930041672.png', '2025-12-01 02:55:55');
+(1, 'Admin', 'admin@email.com', '$2b$10$0Ihi0Gt0Zpede7WpXxkQ2ONKY9mQYrTkz2kv0CkvOCYVjK5jWWU2a', 'admin', 'avatar-1-1765059613281.png', '2025-12-01 02:55:55');
 
 --
 -- Indexes for dumped tables
@@ -475,13 +495,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT untuk tabel `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT untuk tabel `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT untuk tabel `debt_payments`
@@ -493,31 +513,31 @@ ALTER TABLE `debt_payments`
 -- AUTO_INCREMENT untuk tabel `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT untuk tabel `purchases`
 --
 ALTER TABLE `purchases`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT untuk tabel `purchase_items`
 --
 ALTER TABLE `purchase_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT untuk tabel `sales`
 --
 ALTER TABLE `sales`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT untuk tabel `sale_items`
 --
 ALTER TABLE `sale_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT untuk tabel `stock_adjustments`
@@ -529,13 +549,13 @@ ALTER TABLE `stock_adjustments`
 -- AUTO_INCREMENT untuk tabel `suppliers`
 --
 ALTER TABLE `suppliers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT untuk tabel `units`
 --
 ALTER TABLE `units`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT untuk tabel `users`

@@ -174,12 +174,12 @@ export default {
                     }
                 });
             } catch (error) {
-                console.error(error);
+                // console.error(error);
                 
                 this.$swal.fire({
                     icon: 'error',
-                    title: 'Oops...',
-                    text: error.response?.data?.message || 'Gagal upload gambar',
+                    title: 'Gagal upload gambar',
+                    text: error.response?.data?.message || 'File harus Gambar (jpeg/jpg/png)',
                 });
             }
         }
