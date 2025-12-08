@@ -13,6 +13,8 @@ import ProfitLoss from '../views/reports/ProfitLoss.vue'
 import StockOpname from '../views/inventory/StockOpname.vue'
 import Profile from '../views/pages/Profile.vue'
 import Settings from '../views/pages/Settings.vue'
+import Roles from '../views/settings/Roles.vue'
+import Users from '../views/settings/Users.vue'
 
 const routes = [
   {
@@ -97,6 +99,16 @@ const routes = [
         path: '/settings',
         name: 'Settings',
         component: () => Settings
+      },
+      {
+        path: '/settings/roles',
+        name: 'Roles',
+        component: () => Roles
+      },
+      {
+        path: '/settings/users',
+        name: 'Users',
+        component: () => Users
       },
     ],
   },

@@ -7,37 +7,85 @@ import { logo } from '@/assets/brand/logo'
 import { sygnet } from '@/assets/brand/sygnet'
 import { AppSidebarNav } from '@/components/AppSidebarNav.js'
 import { useSidebarStore } from '@/stores/sidebar.js'
+import nav from '@/_nav'
+
+const fileURL = import.meta.env.VITE_FILE_URL || process.env.VUE_APP_FILE_URL || 'http://localhost:5000/uploads/';
 
 const sidebar = useSidebarStore()
+const filteredNav = ref([]) 
 
+// Variabel Logo Dinamis
 const logoUrl = ref(null)
 const storeName = ref('APLIKASI KASIR')
 
 onMounted(async () => {
-  // 1. Cek LocalStorage dulu (Supaya loading instan/cepat)
-  const cached = localStorage.getItem('app_settings')
-  if (cached) {
-    const settings = JSON.parse(cached)
-    if (settings.store_name) storeName.value = settings.store_name
-    if (settings.logo) {
-      logoUrl.value = `http://localhost:5000/uploads/${settings.logo}`
+    // --- 1. LOGIKA LOGO DINAMIS ---
+    const cachedSettings = localStorage.getItem('app_settings')
+    if (cachedSettings) {
+        const settings = JSON.parse(cachedSettings)
+        if (settings.logo) logoUrl.value = fileURL + settings.logo;
+        if (settings.store_name) storeName.value = settings.store_name
     }
-  }
+    // Fetch fresh settings (silent)
+    try {
+        const res = await axios.get('/settings')
+        if (res.data.logo) logoUrl.value = fileURL + res.data.logo;
+    } catch(e) {}
 
-  // 2. Fetch data terbaru dari API (Untuk memastikan jika ada update baru)
-  try {
-    const response = await axios.get('/settings') // Pastikan endpoint ini PUBLIC atau token terkirim
+    // --- 2. LOGIKA FILTER MENU ---
+    const userStr = localStorage.getItem('user');
     
-    if (response.data.store_name) storeName.value = response.data.store_name
-    
-    if (response.data.logo) {
-      logoUrl.value = `http://localhost:5000/uploads/${response.data.logo}`
-      // Update cache
-      localStorage.setItem('app_settings', JSON.stringify(response.data))
+    if (!userStr) {
+        // console.log("User tidak ditemukan di localStorage");
+        filteredNav.value = [];
+        return;
     }
-  } catch (error) {
-    console.error('Gagal memuat logo sidebar', error)
-  }
+    
+    const user = JSON.parse(userStr);
+    const allowed = user.menus || []; 
+    
+    // console.log("User Login:", user.name);
+    // console.log("Menu yang Diizinkan:", allowed);
+
+    // Jika Super Admin
+    if (allowed.includes('*')) {
+        // console.log("User adalah Super Admin, tampilkan semua.");
+        filteredNav.value = nav;
+        return;
+    }
+
+    const filterItem = (items) => {
+        return items.filter(item => {
+            let isAllowed = true;
+            
+            // Cek Permission Key
+            if (item.permissionKey) {
+                isAllowed = allowed.includes(item.permissionKey);
+                // DEBUG LOG
+                // console.log(`Menu: ${item.name} | Key: ${item.permissionKey} | Boleh? ${isAllowed}`);
+            } else {
+                // DEBUG LOG
+                // console.log(`Menu: ${item.name} | Key: TIDAK ADA (Default True)`);
+            }
+
+            // Cek Anak Menu (Group)
+            if (isAllowed && item.items) {
+                const filteredChildren = filterItem(item.items);
+                item.items = filteredChildren;
+                
+                // Jika group jadi kosong, sembunyikan
+                if (filteredChildren.length === 0) {
+                    // console.log(`Group ${item.name} disembunyikan karena anak kosong.`);
+                    return false;
+                }
+            }
+
+            return isAllowed;
+        });
+    };
+
+    const navCopy = JSON.parse(JSON.stringify(nav));
+    filteredNav.value = filterItem(navCopy);
 })
 </script>
 
@@ -80,6 +128,6 @@ onMounted(async () => {
       </RouterLink>
       <CCloseButton class="d-lg-none" dark @click="sidebar.toggleVisible()" />
     </CSidebarHeader>
-    <AppSidebarNav />
+    <AppSidebarNav :nav="filteredNav" />
   </CSidebar>
 </template>

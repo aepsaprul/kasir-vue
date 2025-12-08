@@ -26,6 +26,7 @@ import {
   cilSearch,
   cilAlignLeft,
   cilTrash,
+  cilStorage,
 } from '@coreui/icons'
 import { cifUs, cifBr, cifIn, cifFr, cifEs, cifPl } from '@coreui/icons'
 import {
@@ -159,6 +160,7 @@ export const iconsSet = Object.assign(
     cilSpeech,
     cilSpeedometer,
     cilStar,
+    cilStorage,
     cilSun,
     cilTask,
     cilTrash,

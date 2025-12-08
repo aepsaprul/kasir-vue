@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 07 Des 2025 pada 00.18
+-- Waktu pembuatan: 09 Des 2025 pada 00.15
 -- Versi server: 10.4.32-MariaDB
 -- Versi PHP: 8.2.12
 
@@ -177,6 +177,26 @@ INSERT INTO `purchase_items` (`id`, `purchase_id`, `product_id`, `qty`, `price_b
 -- --------------------------------------------------------
 
 --
+-- Struktur dari tabel `roles`
+--
+
+CREATE TABLE `roles` (
+  `id` int(11) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `access_menu` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `roles`
+--
+
+INSERT INTO `roles` (`id`, `name`, `access_menu`) VALUES
+(1, 'Super Admin', '[\"*\"]'),
+(2, 'Kasir', '[\"dashboard\",\"pos\",\"pos_history\",\"master_data\",\"inventory\",\"reports\",\"categories\",\"units\",\"products\",\"suppliers\",\"customers\"]');
+
+-- --------------------------------------------------------
+
+--
 -- Struktur dari tabel `sales`
 --
 
@@ -287,7 +307,7 @@ CREATE TABLE `settings` (
 --
 
 INSERT INTO `settings` (`id`, `store_name`, `email`, `phone`, `address`, `logo`) VALUES
-(1, 'Coffee Shop', 'admin@toko.com', '08123456789', 'Jl. Jendral Sudirman No. 1', 'logo-1764999085792.jpg');
+(1, 'Coffee Shop2', 'admin@toko.com', '08123456789', 'Jl. Jendral Sudirman No. 1', 'logo-1765063719441.svg');
 
 -- --------------------------------------------------------
 
@@ -376,8 +396,8 @@ CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `name` varchar(100) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
+  `role_id` int(11) DEFAULT 2,
   `password` varchar(255) DEFAULT NULL,
-  `role` enum('admin','kasir') DEFAULT 'kasir',
   `avatar` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -386,8 +406,9 @@ CREATE TABLE `users` (
 -- Dumping data untuk tabel `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `avatar`, `created_at`) VALUES
-(1, 'Admin', 'admin@email.com', '$2b$10$0Ihi0Gt0Zpede7WpXxkQ2ONKY9mQYrTkz2kv0CkvOCYVjK5jWWU2a', 'admin', 'avatar-1-1765059613281.png', '2025-12-01 02:55:55');
+INSERT INTO `users` (`id`, `name`, `email`, `role_id`, `password`, `avatar`, `created_at`) VALUES
+(1, 'Admin', 'admin@email.com', 1, '$2b$10$0Ihi0Gt0Zpede7WpXxkQ2ONKY9mQYrTkz2kv0CkvOCYVjK5jWWU2a', 'avatar-1-1765064142496.png', '2025-12-01 02:55:55'),
+(2, 'Budi', 'budi@email.com', 2, '$2b$10$iRfk1CwFRuYKSHCoCczgu.auQ9qjlXyfoHTswrHvvdxkVXTQoJiQ2', NULL, '2025-12-08 04:43:28');
 
 --
 -- Indexes for dumped tables
@@ -438,6 +459,12 @@ ALTER TABLE `purchase_items`
   ADD KEY `product_id` (`product_id`);
 
 --
+-- Indeks untuk tabel `roles`
+--
+ALTER TABLE `roles`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indeks untuk tabel `sales`
 --
 ALTER TABLE `sales`
@@ -485,7 +512,8 @@ ALTER TABLE `units`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD UNIQUE KEY `email` (`email`),
+  ADD KEY `fk_user_role` (`role_id`);
 
 --
 -- AUTO_INCREMENT untuk tabel yang dibuang
@@ -528,6 +556,12 @@ ALTER TABLE `purchase_items`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
+-- AUTO_INCREMENT untuk tabel `roles`
+--
+ALTER TABLE `roles`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT untuk tabel `sales`
 --
 ALTER TABLE `sales`
@@ -561,7 +595,7 @@ ALTER TABLE `units`
 -- AUTO_INCREMENT untuk tabel `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
@@ -614,6 +648,12 @@ ALTER TABLE `sale_items`
 ALTER TABLE `stock_adjustments`
   ADD CONSTRAINT `stock_adjustments_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`),
   ADD CONSTRAINT `stock_adjustments_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+
+--
+-- Ketidakleluasaan untuk tabel `users`
+--
+ALTER TABLE `users`
+  ADD CONSTRAINT `fk_user_role` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

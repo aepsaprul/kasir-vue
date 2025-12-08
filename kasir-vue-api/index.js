@@ -16,6 +16,8 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 const stockOpnameRoutes = require('./routes/stockOpnameRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const settingRoutes = require('./routes/settingRoutes');
+const rolesRoutes = require('./routes/roleRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 dotenv.config();
 
@@ -41,6 +43,8 @@ app.use('/api/stock-opname', stockOpnameRoutes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/profile', profileRoutes);
 app.use('/api/settings', settingRoutes);
+app.use('/api/roles', rolesRoutes);
+app.use('/api/users', userRoutes);
 
 // Test Route
 app.get('/', (req, res) => {

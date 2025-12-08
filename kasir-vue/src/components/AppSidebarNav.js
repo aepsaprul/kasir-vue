@@ -1,9 +1,9 @@
 import { defineComponent, h, onMounted, ref, resolveComponent } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 
-import { cilExternalLink } from '@coreui/icons'
 import { CBadge, CSidebarNav, CNavItem, CNavGroup, CNavTitle } from '@coreui/vue'
-import nav from '@/_nav.js'
+
+// HAPUS BARIS INI: import nav from '@/_nav.js' 
 
 import simplebar from 'simplebar-vue'
 import 'simplebar-vue/dist/simplebar.min.css'
@@ -47,7 +47,15 @@ const AppSidebarNav = defineComponent({
     CNavGroup,
     CNavTitle,
   },
-  setup() {
+  // 1. TERIMA PROPS 'nav' DARI PARENT
+  props: {
+    nav: {
+      type: Array,
+      required: true,
+      default: () => [],
+    },
+  },
+  setup(props) { // 2. MASUKKAN 'props' KE SETUP
     const route = useRoute()
     const firstRender = ref(true)
 
@@ -179,7 +187,8 @@ const AppSidebarNav = defineComponent({
           as: simplebar,
         },
         {
-          default: () => nav.map((item) => renderItem(item)),
+          // 3. GUNAKAN props.nav (Bukan import nav langsung)
+          default: () => props.nav.map((item) => renderItem(item)),
         },
       )
   },

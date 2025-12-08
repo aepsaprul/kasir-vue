@@ -7,7 +7,11 @@ exports.login = async (req, res) => {
 
     try {
         // 1. Cari user berdasarkan email
-        const [rows] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
+        const [rows] = await db.query(`
+            SELECT u.*, r.access_menu 
+            FROM users u 
+            JOIN roles r ON u.role_id = r.id 
+            WHERE u.email = ?`, [email]);
         
         if (rows.length === 0) {
             return res.status(404).json({ message: 'Email tidak ditemukan' });
@@ -32,6 +36,8 @@ exports.login = async (req, res) => {
         );
 
         // 4. Kirim respon sukses
+        const allowedMenus = JSON.parse(user.access_menu || '[]');
+
         res.json({
             message: 'Login berhasil',
             token: token,
@@ -39,8 +45,9 @@ exports.login = async (req, res) => {
                 id: user.id,
                 name: user.name,
                 email: user.email,
-                role: user.role,
-                avatar: user.avatar
+                role_id: user.role_id,
+                avatar: user.avatar,
+                menus: allowedMenus // <--- KIRIM INI KE FRONTEND
             }
         });
 
