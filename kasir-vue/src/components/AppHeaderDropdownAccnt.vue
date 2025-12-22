@@ -15,7 +15,7 @@ export default {
     
     if (user && user.avatar) {
       // Jika ada avatar di database, gunakan URL backend
-      this.dynamicAvatar = `http://localhost:5000/uploads/${user.avatar}`;
+      this.dynamicAvatar = `${this.$fileURL}${user.avatar}`;
     }
   },
   methods: {

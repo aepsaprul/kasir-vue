@@ -13,7 +13,7 @@ import { iconsSet as icons } from '@/assets/icons'
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 
-axios.defaults.baseURL = 'http://localhost:5000/api';
+axios.defaults.baseURL = import.meta.env.VITE_API_URL + '/api';
 axios.interceptors.request.use(config => {
     const token = localStorage.getItem('token');
     if (token) {

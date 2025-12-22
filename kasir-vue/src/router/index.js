@@ -2,19 +2,6 @@ import { h, resolveComponent } from 'vue'
 import { createRouter, createWebHashHistory } from 'vue-router'
 
 import DefaultLayout from '@/layouts/DefaultLayout'
-import Categories from '../views/master/Categories.vue'
-import Units from '../views/master/Units.vue'
-import Products from '../views/master/Products.vue'
-import Sales from '../views/transaction/Sales.vue'
-import Suppliers from '../views/master/Suppliers.vue'
-import Customers from '../views/master/Customers.vue'
-import Purchases from '../views/transaction/Purchases.vue'
-import ProfitLoss from '../views/reports/ProfitLoss.vue'
-import StockOpname from '../views/inventory/StockOpname.vue'
-import Profile from '../views/pages/Profile.vue'
-import Settings from '../views/pages/Settings.vue'
-import Roles from '../views/settings/Roles.vue'
-import Users from '../views/settings/Users.vue'
 
 const routes = [
   {
@@ -38,37 +25,37 @@ const routes = [
       {
         path: '/master/categories',
         name: 'Categories',
-        component: () => Categories
+        component: () => import('@/views/master/Categories.vue')
       },
       {
         path: '/master/units',
         name: 'Units',
-        component: () => Units
+        component: () => import('@/views/master/Units.vue')
       },
       {
         path: '/master/products',
         name: 'Products',
-        component: () => Products
+        component: () => import('@/views/master/Products.vue')
       },
       {
         path: '/master/suppliers',
         name: 'Suppliers',
-        component: () => Suppliers
+        component: () => import('@/views/master/Suppliers.vue')
       },
       {
         path: '/master/customers',
         name: 'Customers',
-        component: () => Customers
+        component: () => import('@/views/master/Customers.vue')
       },
       {
         path: '/transaction/purchases',
         name: 'Purchases',
-        component: () => Purchases
+        component: () => import('@/views/transaction/Purchases.vue')
       },
       {
         path: '/transaction/sales',
         name: 'Sales',
-        component: () => Sales
+        component: () => import('@/views/transaction/Sales.vue')
       },
       {
         path: '/transaction/sales-history',
@@ -83,32 +70,32 @@ const routes = [
       {
         path: '/inventory/stock-opname',
         name: 'StockOpname',
-        component: () => StockOpname
+        component: () => import('@/views/inventory/StockOpname.vue')
       },
       {
         path: '/reports/profit-loss',
         name: 'ProfitLoss',
-        component: () => ProfitLoss
+        component: () => import('@/views/reports/ProfitLoss.vue')
       },
       {
         path: '/profile',
         name: 'Profile',
-        component: () => Profile
+        component: () => import('@/views/pages/Profile.vue')
       },
       {
         path: '/settings',
         name: 'Settings',
-        component: () => Settings
+        component: () => import('@/views/pages/Settings.vue')
       },
       {
         path: '/settings/roles',
         name: 'Roles',
-        component: () => Roles
+        component: () => import('@/views/settings/Roles.vue')
       },
       {
         path: '/settings/users',
         name: 'Users',
-        component: () => Users
+        component: () => import('@/views/settings/Users.vue')
       },
     ],
   },
