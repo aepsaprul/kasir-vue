@@ -5,7 +5,7 @@
                 <CCard class="mb-4">
                     <CCardHeader class="d-flex justify-content-between align-items-center">
                         <strong>Data Supplier</strong>
-                        <CButton color="primary" size="sm" @click="openModal"><CIcon icon="cil-plus" size="15"></CIcon> Tambah Supplier</CButton>
+                        <CButton color="primary" size="sm" @click="openModal"><CIcon icon="cil-plus" height="15"></CIcon> Tambah Supplier</CButton>
                     </CCardHeader>
                 </CCard>
 
@@ -23,13 +23,13 @@
                             <!-- Nama Supplier -->
                             <div class="fw-bold fs-5 mb-1">{{ item.name }}</div>
                             <!-- Phone & Alamat -->
-                            <div class="text-muted small mb-2"><CIcon icon="cil-phone" size="15"></CIcon> {{ item.phone || '-' }}</div>
-                            <div class="text-muted small mb-3"><CIcon icon="cil-location-pin" size="15"></CIcon> {{ item.address || '-' }}</div>
+                            <div class="text-muted small mb-2"><CIcon icon="cil-phone" height="15"></CIcon> {{ item.phone || '-' }}</div>
+                            <div class="text-muted small mb-3"><CIcon icon="cil-location-pin" height="15"></CIcon> {{ item.address || '-' }}</div>
 
                             <!-- Tombol Aksi -->
                             <div class="d-flex justify-content-end gap-2">
-                                <CButton color="warning" size="sm" class="text-white" @click="editItem(item)"><CIcon icon="cil-pencil" size="15"></CIcon></CButton>
-                                <CButton color="danger" size="sm" class="text-white" @click="deleteItem(item.id)"><CIcon icon="cil-trash" size="15"></CIcon></CButton>
+                                <CButton color="warning" size="sm" class="text-white" @click="editItem(item)"><CIcon icon="cil-pencil" height="15"></CIcon></CButton>
+                                <CButton color="danger" size="sm" class="text-white" @click="deleteItem(item.id)"><CIcon icon="cil-trash" height="15"></CIcon></CButton>
                             </div>
 
                         </CCardBody>
@@ -60,8 +60,8 @@
                 </CForm>
             </CModalBody>
             <CModalFooter>
-                <CButton color="secondary" @click="showModal = false"><CIcon icon="cil-x-circle" size="15"></CIcon> Batal</CButton>
-                <CButton color="primary" @click="saveData"><CIcon icon="cil-save" size="15"></CIcon> Simpan</CButton>
+                <CButton color="secondary" @click="showModal = false"><CIcon icon="cil-x-circle" height="15"></CIcon> Batal</CButton>
+                <CButton color="primary" @click="saveData"><CIcon icon="cil-save" height="15"></CIcon> Simpan</CButton>
             </CModalFooter>
         </CModal>
     </div>

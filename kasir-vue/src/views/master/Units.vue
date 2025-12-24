@@ -5,7 +5,7 @@
                 <CCard class="mb-4">
                     <CCardHeader class="d-flex justify-content-between align-items-center">
                         <strong>Data Unit</strong>
-                        <CButton color="primary" size="sm" @click="openModal"><CIcon icon="cil-plus" size="15" /> Tambah Unit</CButton>
+                        <CButton color="primary" @click="openModal"><CIcon icon="cil-plus" height="15" /> Tambah Unit</CButton>
                     </CCardHeader>
                 </CCard>
 
@@ -28,12 +28,12 @@
 
                                 <!-- Tombol Aksi -->
                                 <div class="d-flex gap-2">
-                                <CButton color="warning" size="sm" class="text-white" @click="editItem(item)">
-                                    <CIcon icon="cil-pencil" size="15" />
+                                <CButton color="warning" class="text-white" @click="editItem(item)">
+                                    <CIcon icon="cil-pencil" />
                                 </CButton>
 
-                                <CButton color="danger" size="sm" class="text-white" @click="deleteItem(item.id)">
-                                    <CIcon icon="cil-trash" size="15" />
+                                <CButton color="danger" class="text-white" @click="deleteItem(item.id)">
+                                    <CIcon icon="cil-trash" />
                                 </CButton>
                             </div>
 
@@ -56,8 +56,8 @@
                 </CForm>
             </CModalBody>
             <CModalFooter>
-                <CButton color="secondary" @click="showModal = false"><CIcon icon="cil-x-circle" size="15"></CIcon> Batal</CButton>
-                <CButton color="primary" @click="saveData"><CIcon icon="cil-save" size="15"></CIcon> Simpan</CButton>
+                <CButton color="secondary" @click="showModal = false"><CIcon icon="cil-x-circle" height="15"></CIcon> Batal</CButton>
+                <CButton color="primary" @click="saveData"><CIcon icon="cil-save" height="15"></CIcon> Simpan</CButton>
             </CModalFooter>
         </CModal>
     </div>

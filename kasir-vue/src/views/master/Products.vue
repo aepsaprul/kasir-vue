@@ -160,8 +160,8 @@
                 </CForm>
             </CModalBody>
             <CModalFooter>
-                <CButton color="secondary" @click="showModal = false"><CIcon icon="cil-x-circle" size="15"></CIcon> Batal</CButton>
-                <CButton color="primary" @click="saveData"><CIcon icon="cil-save" size="15"></CIcon> Simpan Produk</CButton>
+                <CButton color="secondary" @click="showModal = false"><CIcon icon="cil-x-circle" height="15"></CIcon> Batal</CButton>
+                <CButton color="primary" @click="saveData"><CIcon icon="cil-save" height="15"></CIcon> Simpan Produk</CButton>
             </CModalFooter>
         </CModal>
     </div>

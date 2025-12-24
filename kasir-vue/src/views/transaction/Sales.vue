@@ -94,7 +94,7 @@
 
                     <CCardBody style="overflow-y: auto; flex: 1;" class="p-0">
                         <div v-if="cart.length === 0" class="text-center text-muted mt-5">
-                            <CIcon icon="cil-basket" size="2xl" class="mb-3"/>
+                            <CIcon icon="cil-basket" class="mb-3"/>
                             <p>Keranjang masih kosong</p>
                         </div>
 
@@ -176,7 +176,6 @@
                         <div class="d-grid gap-2">
                             <CButton 
                                 color="success" 
-                                size="md" 
                                 class="text-white" 
                                 :disabled="cart.length === 0 || payAmount < grandTotal || isProcessing"
                                 @click="processTransaction"
@@ -230,8 +229,6 @@ export default {
         filteredProducts() {
             // 1. Filter dasar (semua produk)
             let result = this.products;
-            console.log(this.selectedCategory);
-            
 
             // 2. Filter berdasarkan Kategori (Jika ada yg dipilih)
             if (this.selectedCategory) {
@@ -386,7 +383,6 @@ export default {
                 this.fetchProducts(); 
                 
             } catch (error) {
-                console.error(error);
                 this.$swal.fire('Gagal', error.response?.data?.message || 'Transaksi Gagal', 'error');
             } finally {
                 this.isProcessing = false;

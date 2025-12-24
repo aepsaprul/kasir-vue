@@ -5,7 +5,7 @@
         <CCard class="mb-4">
           <CCardHeader class="d-flex justify-content-between align-items-center">
             <strong>Data Kategori Produk</strong>
-            <CButton color="primary" size="sm" @click="openModal"><CIcon icon="cil-plus" height="15"></CIcon> Tambah Kategori</CButton>
+            <CButton color="primary" @click="openModal"><CIcon icon="cil-plus" height="15"></CIcon> Tambah Kategori</CButton>
           </CCardHeader>
         </CCard>
 
@@ -27,11 +27,11 @@
               <!-- Tombol Aksi -->
               <div class="d-flex gap-2">
                 <CButton color="warning" size="sm" class="text-white" @click="editItem(item)">
-                  <CIcon icon="cil-pencil" size="15" />
+                  <CIcon icon="cil-pencil" height="15" />
                 </CButton>
 
                 <CButton color="danger" size="sm" class="text-white" @click="deleteItem(item.id)">
-                  <CIcon icon="cil-trash" size="15" />
+                  <CIcon icon="cil-trash" height="15" />
                 </CButton>
               </div>
 
@@ -55,8 +55,8 @@
         </CForm>
       </CModalBody>
       <CModalFooter>
-        <CButton color="secondary" @click="showModal = false"><CIcon icon="cil-x-circle" size="15"></CIcon> Batal</CButton>
-        <CButton color="primary" @click="saveData"><CIcon icon="cil-save" size="15"></CIcon> Simpan</CButton>
+        <CButton color="secondary" @click="showModal = false"><CIcon icon="cil-x-circle" height="15"></CIcon> Batal</CButton>
+        <CButton color="primary" @click="saveData"><CIcon icon="cil-save" height="15"></CIcon> Simpan</CButton>
       </CModalFooter>
     </CModal>
   </div>
