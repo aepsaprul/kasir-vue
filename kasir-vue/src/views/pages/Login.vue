@@ -54,6 +54,7 @@
                           <CIcon icon="cil-user" />
                         </CInputGroupText>
                         <CFormInput
+                          ref="emailInput"
                           id="email"
                           placeholder="nama@email.com"
                           autocomplete="email"
@@ -213,6 +214,7 @@ export default {
       password: '',
       rememberMe: false,
       errorMessage: '',
+      isLoading: false,
       showPassword: false,
       settings: { store_name: '', address: '', logo: '', phone: '', email: '' }
     }
@@ -220,6 +222,15 @@ export default {
   
   mounted() {
       this.fetchSettings();
+
+      this.$nextTick(() => {
+        // Ambil elemen berdasarkan ID yang Anda set di <CFormInput id="email">
+        const inputEmail = document.getElementById('email');
+        
+        if (inputEmail) {
+          inputEmail.focus();
+        }
+      });
   },
 
   methods: {
@@ -241,6 +252,7 @@ export default {
     async handleLogin() {
       try {
         this.errorMessage = ''
+        this.isLoading = true;
         
         // Panggil API Backend
         const response = await axios.post('/auth/login', {
@@ -270,6 +282,8 @@ export default {
         } else {
             this.errorMessage = 'Gagal terhubung ke server backend'
         }
+      } finally {
+        this.isLoading = false;
       }
     }
   }

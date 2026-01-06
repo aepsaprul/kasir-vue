@@ -45,7 +45,7 @@ app.use('/api/stock-opname', authMiddleware, trialMiddleware, stockOpnameRoutes)
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/profile', authMiddleware, trialMiddleware, profileRoutes);
-app.use('/api/settings', authMiddleware, trialMiddleware, settingRoutes);
+app.use('/api/settings', settingRoutes);
 app.use('/api/roles', authMiddleware, trialMiddleware, rolesRoutes);
 app.use('/api/users', authMiddleware, trialMiddleware, userRoutes);
 
