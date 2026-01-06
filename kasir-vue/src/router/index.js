@@ -14,12 +14,9 @@ const routes = [
       {
         path: '/dashboard',
         name: 'Dashboard',
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
         component: () =>
           import(
-            /* webpackChunkName: "dashboard" */ '@/views/dashboard/Dashboard.vue'
+            '@/views/dashboard/Dashboard.vue'
           ),
       },
       {
@@ -120,6 +117,11 @@ const routes = [
         name: 'Register',
         component: () => import('@/views/pages/Register'),
       },
+      {
+        path: '/pages/trial-expired',
+        name: 'TrialExpired',
+        component: () => import('@/views/pages/TrialExpired.vue')
+      },
     ],
   },
 ]
@@ -135,16 +137,24 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token');
+  const trialInfo = JSON.parse(localStorage.getItem('trial_info') || '{}');
+  const isExpired = trialInfo.expired === true;
+
+  // Jika Expired dan mencoba akses halaman selain Login atau Trial Expired
+  if (isExpired && to.path !== '/pages/trial-expired' && to.path !== '/pages/login') {
+      next('/pages/trial-expired');
+      return;
+  }
   
-  // 1. Jika halaman butuh login (requiresAuth) TAPI tidak ada token
+  // Jika halaman butuh login (requiresAuth) TAPI tidak ada token
   if (to.matched.some(record => record.meta.requiresAuth) && !token) {
     next('/pages/login'); // Tendang ke login
   } 
-  // 2. Jika halaman khusus tamu (guest) TAPI sudah punya token (sudah login)
+  // Jika halaman khusus tamu (guest) TAPI sudah punya token (sudah login)
   else if (to.matched.some(record => record.meta.guest) && token) {
     next('/dashboard'); // Alihkan ke dashboard
   } 
-  // 3. Lanjut normal
+  // Lanjut normal
   else {
     next(); 
   }

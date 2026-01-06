@@ -240,7 +240,7 @@ export default {
     },
     async handleLogin() {
       try {
-        this.errorMessage = '' // Reset error
+        this.errorMessage = ''
         
         // Panggil API Backend
         const response = await axios.post('/auth/login', {
@@ -254,9 +254,14 @@ export default {
           // 1. Simpan token & user info ke LocalStorage
           localStorage.setItem('token', response.data.token)
           localStorage.setItem('user', JSON.stringify(response.data.user))
+          localStorage.setItem('trial_info', JSON.stringify(response.data.trial_status));
 
-          // 2. Redirect ke Dashboard
-          this.$router.push('/dashboard')
+          if (response.data.trial_status && response.data.trial_status.expired) {
+              // Redirect ke halaman trial habis
+              this.$router.push('/pages/trial-expired');
+          } else {
+            this.$router.push('/dashboard')
+          }
         }
       } catch (error) {
         // Tangani error jika password salah atau server mati

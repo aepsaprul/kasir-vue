@@ -3,6 +3,9 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
 
+const authMiddleware = require('./middleware/authMiddleware');
+const trialMiddleware = require('./middleware/trialMiddleware');
+
 const authRoutes = require('./routes/authRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const unitRoutes = require('./routes/unitRoutes');
@@ -29,22 +32,22 @@ app.use(cors()); // Agar VueJS bisa akses API ini
 app.use(express.json()); // Agar bisa baca data JSON dari frontend
 
 app.use('/api/auth', authRoutes);
-app.use('/api/categories', categoryRoutes);
-app.use('/api/units', unitRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/sales', saleRoutes);
-app.use('/api/suppliers', supplierRoutes);
-app.use('/api/customers', customerRoutes);
-app.use('/api/purchases', purchaseRoutes);
-app.use('/api/reports', reportRoutes);
-app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/stock-opname', stockOpnameRoutes);
+app.use('/api/categories', authMiddleware, trialMiddleware, categoryRoutes);
+app.use('/api/units', authMiddleware, trialMiddleware, unitRoutes);
+app.use('/api/products', authMiddleware, trialMiddleware, productRoutes);
+app.use('/api/sales', authMiddleware, trialMiddleware, saleRoutes);
+app.use('/api/suppliers', authMiddleware, trialMiddleware, supplierRoutes);
+app.use('/api/customers', authMiddleware, trialMiddleware, customerRoutes);
+app.use('/api/purchases', authMiddleware, trialMiddleware, purchaseRoutes);
+app.use('/api/reports', authMiddleware, trialMiddleware, reportRoutes);
+app.use('/api/dashboard', authMiddleware, trialMiddleware, dashboardRoutes);
+app.use('/api/stock-opname', authMiddleware, trialMiddleware, stockOpnameRoutes);
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use('/api/profile', profileRoutes);
-app.use('/api/settings', settingRoutes);
-app.use('/api/roles', rolesRoutes);
-app.use('/api/users', userRoutes);
+app.use('/api/profile', authMiddleware, trialMiddleware, profileRoutes);
+app.use('/api/settings', authMiddleware, trialMiddleware, settingRoutes);
+app.use('/api/roles', authMiddleware, trialMiddleware, rolesRoutes);
+app.use('/api/users', authMiddleware, trialMiddleware, userRoutes);
 
 // Test Route
 app.get('/', (req, res) => {

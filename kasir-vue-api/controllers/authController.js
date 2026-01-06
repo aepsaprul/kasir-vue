@@ -38,9 +38,21 @@ exports.login = async (req, res) => {
         // 4. Kirim respon sukses
         const allowedMenus = JSON.parse(user.access_menu || '[]');
 
+        const now = new Date();
+        const trialEnd = new Date(user.trial_ends_at);
+        let isTrialExpired = false;
+
+        if (!user.is_subscribed && user.trial_ends_at && now > trialEnd) {
+            isTrialExpired = true;
+        }
+
         res.json({
             message: 'Login berhasil',
             token: token,
+            trial_status: {
+                expired: isTrialExpired,
+                ends_at: user.trial_ends_at
+            },
             user: {
                 id: user.id,
                 name: user.name,

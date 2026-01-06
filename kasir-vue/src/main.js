@@ -27,6 +27,12 @@ axios.interceptors.request.use(config => {
 axios.interceptors.response.use(
     response => response, // Jika sukses, loloskan saja
     error => {
+        if (error.response && error.response.status === 403 && error.response.data.code === 'TRIAL_EXPIRED') {
+            // Arahkan ke halaman Trial Expired
+            window.location.href = '/#/pages/trial-expired';
+            return Promise.reject(error);
+        }
+        
         // Jika errornya adalah 401 (Unauthorized)
         if (error.response && error.response.status === 401) {
             console.warn('Sesi habis, logout otomatis...');
