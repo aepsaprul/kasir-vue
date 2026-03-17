@@ -6,37 +6,36 @@
           <CCardHeader class="d-flex justify-content-between align-items-center">
             <strong>Manajemen Pengguna (User)</strong>
             <CButton color="primary" size="sm" @click="openModal">
-              <CIcon icon="cil-user-plus" class="me-2"/>
-              Tambah User
+              <CIcon icon="cil-plus" height="15"></CIcon> Tambah User
             </CButton>
           </CCardHeader>
           <CCardBody>
-            <CTable hover responsive bordered align="middle">
+            <CTable hover responsive>
               <CTableHead>
                 <CTableRow>
                   <CTableHeaderCell scope="col" width="50">#</CTableHeaderCell>
                   <CTableHeaderCell scope="col">Nama Lengkap</CTableHeaderCell>
                   <CTableHeaderCell scope="col">Email / Username</CTableHeaderCell>
                   <CTableHeaderCell scope="col">Role (Jabatan)</CTableHeaderCell>
-                  <CTableHeaderCell scope="col" width="150">Aksi</CTableHeaderCell>
+                  <CTableHeaderCell scope="col" width="150" class="text-center">Aksi</CTableHeaderCell>
                 </CTableRow>
               </CTableHead>
               <CTableBody>
                 <CTableRow v-for="(user, index) in users" :key="user.id">
                   <CTableHeaderCell scope="row">{{ index + 1 }}</CTableHeaderCell>
                   <CTableDataCell>
-                     <div class="d-flex align-items-center">
+                    <div class="d-flex align-items-center">
                         <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
                             {{ user.name.charAt(0).toUpperCase() }}
                         </div>
                         {{ user.name }}
-                     </div>
+                    </div>
                   </CTableDataCell>
                   <CTableDataCell>{{ user.email }}</CTableDataCell>
                   <CTableDataCell>
                     <CBadge :color="getRoleColor(user.role_name)">{{ user.role_name }}</CBadge>
                   </CTableDataCell>
-                  <CTableDataCell>
+                  <CTableDataCell class="text-center">
                     <CButton color="warning" size="sm" class="me-1 text-white" @click="editUser(user)">
                       <CIcon icon="cil-pencil" size="sm"/>
                     </CButton>

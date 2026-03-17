@@ -83,7 +83,7 @@
                   <CTableDataCell>{{ sale.cashier_name }}</CTableDataCell>
                   <CTableDataCell class="fw-bold text-success">{{ formatRupiah(sale.final_amount) }}</CTableDataCell>
                 </CTableRow>
-                 <CTableRow v-if="recentSales.length === 0">
+                <CTableRow v-if="recentSales.length === 0">
                     <CTableDataCell colspan="4" class="text-center">Belum ada data</CTableDataCell>
                 </CTableRow>
               </CTableBody>

@@ -3,22 +3,26 @@
     <CCard class="mb-4">
         <CCardHeader class="d-flex justify-content-between">
             <strong>Manajemen Role (Hak Akses)</strong>
-            <CButton size="sm" color="primary" @click="openModal">+ Tambah Role</CButton>
+            <CButton size="sm" color="primary" @click="openModal"><CIcon icon="cil-plus" height="15"></CIcon> Tambah Role</CButton>
         </CCardHeader>
         <CCardBody>
-            <CTable hover>
+            <CTable hover responsive>
                 <CTableHead>
                     <CTableRow>
                         <CTableHeaderCell>Nama Role</CTableHeaderCell>
-                        <CTableHeaderCell>Aksi</CTableHeaderCell>
+                        <CTableHeaderCell class="text-center">Aksi</CTableHeaderCell>
                     </CTableRow>
                 </CTableHead>
                 <CTableBody>
                     <CTableRow v-for="role in roles" :key="role.id">
                         <CTableDataCell>{{ role.name }}</CTableDataCell>
-                        <CTableDataCell>
-                            <CButton size="sm" color="warning" class="me-1 text-white" @click="edit(role)">Edit</CButton>
-                            <CButton size="sm" color="danger" class="text-white" @click="del(role.id)">Hapus</CButton>
+                        <CTableDataCell class="text-center">
+                            <CButton size="sm" color="warning" class="me-1 text-white" @click="edit(role)">
+                                <CIcon icon="cil-pencil" height="15" />
+                            </CButton>
+                            <CButton size="sm" color="danger" class="text-white" @click="del(role.id)">
+                                <CIcon icon="cil-trash" height="15" />
+                            </CButton>
                         </CTableDataCell>
                     </CTableRow>
                 </CTableBody>

@@ -4,8 +4,8 @@ node_modules/
 tests/e2e/reports/
 
 # local env files
-.env.local
-.env.*.local
+# .env.local
+# .env.*.local
 
 # dependencies
 /node_modules

@@ -192,10 +192,12 @@
             </CCol>
         </CRow>
     </div>
+    
 </template>
 
 <script>
 import axios from 'axios';
+import qz from 'qz-tray';
 
 export default {
     name: 'Sales',
@@ -221,7 +223,14 @@ export default {
 
             loading: false,
             isProcessing: false,
-            moneyConfig: { prefix: 'Rp ', suffix: '', thousands: '.', decimal: ',', precision: 0, disableNegative: true }
+            moneyConfig: { prefix: 'Rp ', suffix: '', thousands: '.', decimal: ',', precision: 0, disableNegative: true },
+
+            // STRUK
+            settings: { store_name: 'TOKO SAYA', address: 'Alamat Toko' },
+            userName: 'Kasir',
+            
+            // NAMA PRINTER ANDA DI WINDOWS (Sangat Penting! Sesuaikan dengan komputer Anda)
+            printerName: 'POS-58',
         };
     },
     computed: {
@@ -276,13 +285,30 @@ export default {
 
     mounted() {
         this.fetchProducts();
-        this.fetchCategories(); // LOAD KATEGORI
+        this.fetchCategories();
         this.fetchCustomers();
+
+        // AMBIL DATA TOKO & KASIR UNTUK STRUK
+        const savedSettings = localStorage.getItem('app_settings');
+        if (savedSettings) this.settings = JSON.parse(savedSettings);
+        
+        const savedUser = localStorage.getItem('user');
+        if (savedUser) this.userName = JSON.parse(savedUser).name;
+
+        // OTOMATIS KONEK KE QZ TRAY SAAT HALAMAN KASIR DIBUKA
+        this.connectQZ();
     },
 
     methods: {
         formatRupiah(val) {
-            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(val);
+            let formatted = new Intl.NumberFormat('id-ID', { 
+                style: 'currency', 
+                currency: 'IDR', 
+                minimumFractionDigits: 0 
+            }).format(val);
+            
+            // Hapus karakter non-breaking space (\u00A0) dan ganti dengan spasi biasa
+            return formatted.replace(/\u00A0/g, ' ').replace(/\u202F/g, ' ');
         },
 
         async fetchProducts() {
@@ -362,31 +388,223 @@ export default {
 
                 const response = await axios.post('/sales', payload);
                 
-                await this.$swal.fire({
-                    title: 'Transaksi Berhasil!',
-                    icon: 'success',
-                    html: `
-                        <div class="text-start">
-                            <p><strong>No Invoice:</strong> ${response.data.invoice}</p>
-                            <p><strong>Metode:</strong> ${this.paymentMethod}</p>
-                            <hr>
-                            <h3 class="text-success text-center">Kembalian: ${this.formatRupiah(response.data.change)}</h3>
-                        </div>
-                    `,
-                    confirmButtonText: 'Tutup & Transaksi Baru'
-                });
+                // await this.$swal.fire({
+                //     title: 'Transaksi Berhasil!',
+                //     icon: 'success',
+                //     html: `
+                //         <div class="text-start">
+                //             <p><strong>No Invoice:</strong> ${response.data.invoice}</p>
+                //             <p><strong>Metode:</strong> ${this.paymentMethod}</p>
+                //             <hr>
+                //             <h3 class="text-success text-center">Kembalian: ${this.formatRupiah(response.data.change)}</h3>
+                //         </div>
+                //     `,
+                //     confirmButtonText: 'Tutup & Transaksi Baru'
+                // });
                 
+                // this.cart = [];
+                // this.payAmount = 0;
+                // this.paymentMethod = 'Tunai'; 
+                // this.resetCustomer();
+                // this.fetchProducts();
+
+                // 1. SIAPKAN DATA UNTUK STRUK SEBELUM CART DIRESET
+                // this.receiptData = {
+                //     invoice: response.data.invoice,
+                //     date: new Date().toLocaleString('id-ID'),
+                //     items: [...this.cart], // Copy isi keranjang
+                //     total: this.grandTotal,
+                //     payAmount: this.payAmount,
+                //     change: response.data.change,
+                //     method: this.paymentMethod
+                // };
+                
+                // // 2. TAMPILKAN POPUP SUKSES & TANYA CETAK STRUK
+                // const swalRes = await this.$swal.fire({
+                //     title: 'Transaksi Berhasil!',
+                //     icon: 'success',
+                //     html: `
+                //         <div class="text-start mb-3">
+                //             <p class="mb-1"><strong>No Invoice:</strong> ${response.data.invoice}</p>
+                //             <p class="mb-1"><strong>Metode:</strong> ${this.paymentMethod}</p>
+                //             <h3 class="text-success text-center mt-3">Kembalian: ${this.formatRupiah(response.data.change)}</h3>
+                //         </div>
+                //     `,
+                //     showCancelButton: true,
+                //     confirmButtonText: '<i class="cil-print"></i> Cetak Struk',
+                //     cancelButtonText: 'Tutup (Transaksi Baru)',
+                //     confirmButtonColor: '#3085d6',
+                //     cancelButtonColor: '#6c757d'
+                // });
+
+                // // 3. JIKA KASIR KLIK "CETAK STRUK"
+                // if (swalRes.isConfirmed) {
+                //     // Beri jeda sedikit agar Vue merender DOM #print-area
+                //     setTimeout(() => {
+                //         window.print();
+                //     }, 500);
+                // }
+                
+                // 4. RESET FORM SEPERTI BIASA
                 this.cart = [];
                 this.payAmount = 0;
                 this.paymentMethod = 'Tunai'; 
                 this.resetCustomer();
-                this.fetchProducts(); 
-                
+                this.fetchProducts();
             } catch (error) {
                 this.$swal.fire('Gagal', error.response?.data?.message || 'Transaksi Gagal', 'error');
             } finally {
                 this.isProcessing = false;
             }
+        },
+
+        async connectQZ() {
+            try {
+                if (!qz.websocket.isActive()) {
+                    await qz.websocket.connect();
+                    console.log("QZ Tray Terhubung!");
+                }
+            } catch (error) {
+                console.error("Gagal terhubung ke QZ Tray:", error);
+            }
+        },
+
+        // --- FUNGSI BARU: BANTUAN FORMAT SPASI STRUK 58mm ---
+        // Kertas 58mm standarnya muat 32 Karakter per baris
+        formatLine(leftText, rightText) {
+            const maxLength = 32; 
+            let textL = leftText.toString();
+            let textR = rightText.toString();
+            
+            // Jika kepanjangan, potong teks kiri
+            if (textL.length + textR.length + 1 > maxLength) {
+                textL = textL.substring(0, maxLength - textR.length - 2) + "..";
+            }
+            
+            // Hitung sisa spasi di tengah
+            const spaces = maxLength - (textL.length + textR.length);
+            return textL + " ".repeat(Math.max(0, spaces)) + textR;
+        },
+
+        // --- FUNGSI BARU: CETAK VIA QZ TRAY ---
+        async printReceiptQZ(receiptData) {
+            try {
+                if (!qz.websocket.isActive()) {
+                    await qz.websocket.connect();
+                }
+
+                // Cari printer
+                const config = qz.configs.create(this.printerName);
+
+                // SUSUN DATA ESC/POS (Bahasa Mesin Printer)
+                const data = [
+                    '\x1B' + '\x40',          // Init printer
+                    '\x1B' + '\x61' + '\x31', // Center align (Tengah)
+                    this.settings.store_name + '\n',
+                    this.settings.address + '\n',
+                    "--------------------------------\n", // 32 Karakter strip
+                    
+                    '\x1B' + '\x61' + '\x30', // Left align (Kiri)
+                    `No   : ${receiptData.invoice}\n`,
+                    `Kasir: ${this.userName}\n`,
+                    `Tgl  : ${receiptData.date}\n`,
+                    "--------------------------------\n",
+                ];
+
+                // Masukkan Item Belanja
+                receiptData.items.forEach(item => {
+                    // Baris 1: Nama Produk
+                    data.push(item.name + '\n');
+                    // Baris 2: Qty x Harga  ................ Subtotal
+                    let qtyPrice = `${item.qty}x ${this.formatRupiah(item.price)}`;
+                    let subTotal = this.formatRupiah(item.qty * item.price);
+                    data.push(this.formatLine(qtyPrice, subTotal) + '\n');
+                });
+
+                // Bagian Bawah / Total
+                data.push("--------------------------------\n");
+                data.push(this.formatLine("Total", this.formatRupiah(receiptData.total)) + '\n');
+                data.push(this.formatLine(`Bayar (${receiptData.method})`, this.formatRupiah(receiptData.payAmount)) + '\n');
+                data.push(this.formatLine("Kembali", this.formatRupiah(receiptData.change)) + '\n');
+                
+                data.push("--------------------------------\n");
+                data.push('\x1B' + '\x61' + '\x31'); // Center align
+                data.push("*** TERIMA KASIH ***\n");
+                data.push('\x0A\x0A\x0A\x0A'); // Feed (Gulung) kertas 4 baris agar mudah disobek
+                
+                // JIKA PUNYA LACI KASIR (Cash Drawer), Buka otomatis dengan kode ini:
+                // data.push('\x1B' + '\x70' + '\x00' + '\x19' + '\xFA'); 
+
+                // PERINTAH CETAK
+                await qz.print(config, data);
+                
+            } catch (err) {
+                console.error("Print Error:", err);
+                this.$swal.fire('Error Printer', 'Gagal mencetak. Pastikan QZ Tray menyala dan nama printer benar.', 'error');
+            }
+        },
+
+        // --- UPDATE FUNGSI PROSES TRANSAKSI ---
+        async processTransaction() {
+        // (Validasi sama persis seperti sebelumnya)
+        // ... 
+        
+        this.isProcessing = true;
+        try {
+            const payload = {
+            items: this.cart.map(item => ({ id: item.id, qty: item.qty })),
+            paid_amount: this.payAmount,
+            customer_id: this.selectedCustomerId,
+            payment_method: this.paymentMethod
+            };
+
+            const response = await axios.post('/sales', payload);
+            
+            // 1. SIAPKAN DATA STRUK
+            const receiptData = {
+                invoice: response.data.invoice,
+                date: new Date().toLocaleString('id-ID'),
+                items: [...this.cart], 
+                total: this.grandTotal,
+                payAmount: this.payAmount,
+                change: response.data.change,
+                method: this.paymentMethod
+            };
+            
+            // 2. TAMPILKAN POPUP KEMBALIAN
+            const swalRes = await this.$swal.fire({
+                title: 'Transaksi Berhasil!',
+                icon: 'success',
+                html: `
+                    <div class="text-start mb-3">
+                        <p class="mb-1"><strong>No Invoice:</strong> ${response.data.invoice}</p>
+                        <p class="mb-1"><strong>Metode:</strong> ${this.paymentMethod}</p>
+                        <h3 class="text-success text-center mt-3">Kembalian: ${this.formatRupiah(response.data.change)}</h3>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: '<i class="cil-print"></i> Cetak Struk',
+                cancelButtonText: 'Tutup',
+                confirmButtonColor: '#3085d6',
+            });
+
+            // 3. PANGGIL QZ TRAY JIKA KLIK CETAK
+            if (swalRes.isConfirmed) {
+                await this.printReceiptQZ(receiptData);
+            }
+            
+            // 4. RESET FORM
+            this.cart = [];
+            this.payAmount = 0;
+            this.paymentMethod = 'Tunai'; 
+            this.resetCustomer();
+            this.fetchProducts(); 
+            
+        } catch (error) {
+            this.$swal.fire('Gagal', error.response?.data?.message || 'Transaksi Gagal', 'error');
+        } finally {
+            this.isProcessing = false;
+        }
         }
     }
 };
@@ -397,4 +615,59 @@ export default {
         position: absolute; top: 100%; left: 15px; right: 15px; z-index: 1000;
         max-height: 200px; overflow-y: auto; border: 1px solid #ddd; background: white;
     }
+
+    @media print {
+
+        /* Garis putus-putus khas struk */
+        .dashed-line {
+            border-top: 1px dashed #000;
+            margin: 5px 0;
+        }
+    }
+</style>
+<style>
+@media print {
+    /* 1. KUNCI UTAMA: Beritahu browser ukuran kertasnya 58mm dan tingginya otomatis */
+    @page {
+        size: 58mm auto; 
+        margin: 0mm;
+    }
+
+    /* 2. Reset ukuran layar bawaan */
+    html, body {
+        width: 58mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white !important;
+    }
+
+    /* 3. Sembunyikan semua elemen website */
+    body * {
+        visibility: hidden;
+    }
+
+    /* 4. Tampilkan area struk */
+    #print-area, #print-area * {
+        visibility: visible;
+    }
+
+    /* 5. Tarik struk paksa ke pojok kiri atas halaman kertas */
+    #print-area {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 55mm !important; /* Sengaja dibuat 55mm agar ada sisa margin aman */
+        margin: 0 !important;
+        padding: 0 !important;
+        color: black !important;
+        font-family: 'Courier New', Courier, monospace !important;
+        font-size: 11px !important;
+    }
+
+    /* Garis putus-putus untuk struk */
+    .dashed-line {
+        border-top: 1px dashed black !important;
+        margin: 5px 0 !important;
+    }
+}
 </style>
