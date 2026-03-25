@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 09 Des 2025 pada 00.15
+-- Waktu pembuatan: 22 Mar 2026 pada 04.12
 -- Versi server: 10.4.32-MariaDB
 -- Versi PHP: 8.2.12
 
@@ -64,7 +64,7 @@ CREATE TABLE `customers` (
 
 INSERT INTO `customers` (`id`, `name`, `phone`, `address`, `created_at`) VALUES
 (1, 'Pak Budi', '0812345', 'RT 002 RW 003', '2025-12-02 09:17:11'),
-(2, 'Pak Aep', '0899999', 'Jl Melati No 1', '2025-12-02 09:32:23'),
+(2, 'Pak Tono', '0899999', 'Jl Melati No 1', '2025-12-02 09:32:23'),
 (3, 'Ibu Tetangga', '0812345678', 'Kp. Pasirjati No. 5', '2025-12-06 08:45:13');
 
 -- --------------------------------------------------------
@@ -109,12 +109,12 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `code`, `name`, `category_id`, `unit_id`, `price_buy`, `price_sell`, `price_wholesale`, `min_wholesale_qty`, `stock`, `min_stock`, `image`, `created_at`) VALUES
-(1, '123456', 'Roti Bakar', 7, 7, 18000, 28000, 0, 0, 69, 25, 'product-1764929555487.png', '2025-12-02 03:43:08'),
-(2, '1234565', 'Kentang Goreng', 7, 7, 10000, 25000, 0, 0, 25, 20, 'product-1764929497680.png', '2025-12-02 04:36:53'),
-(3, '54321', 'Espresso', 3, 8, 15000, 23000, 0, 0, 27, 20, 'product-1764905637054.png', '2025-12-02 05:04:53'),
-(4, 'kop-001', 'Cappucino', 6, 8, 15000, 25000, 0, 0, 15, 10, 'product-1765060559186.png', '2025-12-04 09:40:14'),
-(5, 'kop-002', 'Kopi Hitam', 6, 8, 10000, 20000, 0, 0, 34, 10, 'product-1765060569544.png', '2025-12-04 22:17:07'),
-(7, '4433222', 'Cireng', 7, 7, 10000, 12000, 0, 0, 30, 5, 'product-1764997736900.png', '2025-12-06 05:08:56');
+(1, '123456', 'Roti Bakar', 7, 7, 18000, 28000, 0, 0, 68, 25, 'product-1764929555487.png', '2025-12-02 03:43:08'),
+(2, '1234565', 'Kentang Goreng', 7, 7, 10000, 25000, 0, 0, 24, 20, 'product-1764929497680.png', '2025-12-02 04:36:53'),
+(3, '54321', 'Espresso', 3, 8, 15000, 23000, 0, 0, 19, 20, 'product-1764905637054.png', '2025-12-02 05:04:53'),
+(4, 'kop-001', 'Cappucino', 6, 8, 15000, 25000, 0, 0, 8, 10, 'product-1765060559186.png', '2025-12-04 09:40:14'),
+(5, 'kop-002', 'Kopi Hitam', 6, 8, 10000, 20000, 0, 0, 30, 10, 'product-1765060569544.png', '2025-12-04 22:17:07'),
+(7, '4433222', 'Cireng', 7, 7, 10000, 12000, 0, 0, 20, 5, 'product-1764997736900.png', '2025-12-06 05:08:56');
 
 -- --------------------------------------------------------
 
@@ -192,7 +192,7 @@ CREATE TABLE `roles` (
 
 INSERT INTO `roles` (`id`, `name`, `access_menu`) VALUES
 (1, 'Super Admin', '[\"*\"]'),
-(2, 'Kasir', '[\"dashboard\",\"pos\",\"pos_history\",\"master_data\",\"inventory\",\"reports\",\"categories\",\"units\",\"products\",\"suppliers\",\"customers\"]');
+(2, 'Kasir', '[\"dashboard\",\"pos\",\"pos_history\",\"transactions\"]');
 
 -- --------------------------------------------------------
 
@@ -234,7 +234,22 @@ INSERT INTO `sales` (`id`, `invoice_no`, `user_id`, `customer_id`, `total_amount
 (12, 'INV-1764998535488', 1, NULL, 60000, 0, 60000, 60000, 0, 'QRIS', 'lunas', '2025-12-06 05:22:15'),
 (13, 'INV-1765001932837', 1, NULL, 25000, 0, 25000, 25000, 0, 'Transfer', 'lunas', '2025-12-06 06:18:52'),
 (14, 'INV-1765013026210', 1, NULL, 25000, 0, 25000, 25000, 0, 'QRIS', 'lunas', '2025-12-06 09:23:46'),
-(15, 'INV-1765013091745', 1, NULL, 425000, 0, 425000, 425000, 0, 'QRIS', 'lunas', '2025-12-06 09:24:51');
+(15, 'INV-1765013091745', 1, NULL, 425000, 0, 425000, 425000, 0, 'QRIS', 'lunas', '2025-12-06 09:24:51'),
+(16, 'INV-1765262168989', 1, NULL, 116000, 0, 116000, 116000, 0, 'QRIS', 'lunas', '2025-12-09 06:36:08'),
+(17, 'INV-1773657331633', 1, NULL, 25000, 0, 25000, 50000, 25000, 'Tunai', 'lunas', '2026-03-16 10:35:31'),
+(18, 'INV-1773713178325', 1, NULL, 12000, 0, 12000, 15000, 3000, 'Tunai', 'lunas', '2026-03-17 02:06:18'),
+(19, 'INV-1773713313901', 1, NULL, 25000, 0, 25000, 25000, 0, 'Tunai', 'lunas', '2026-03-17 02:08:33'),
+(20, 'INV-1773713498966', 1, NULL, 20000, 0, 20000, 20000, 0, 'Tunai', 'lunas', '2026-03-17 02:11:38'),
+(21, 'INV-1773713628534', 1, NULL, 28000, 0, 28000, 30000, 2000, 'Tunai', 'lunas', '2026-03-17 02:13:48'),
+(22, 'INV-1773713796346', 1, NULL, 25000, 0, 25000, 25000, 0, 'Tunai', 'lunas', '2026-03-17 02:16:36'),
+(23, 'INV-1773713880410', 1, NULL, 23000, 0, 23000, 23000, 0, 'Tunai', 'lunas', '2026-03-17 02:18:00'),
+(24, 'INV-1773714233004', 1, NULL, 23000, 0, 23000, 25000, 2000, 'Tunai', 'lunas', '2026-03-17 02:23:53'),
+(25, 'INV-1773714653109', 1, NULL, 23000, 0, 23000, 25000, 2000, 'Tunai', 'lunas', '2026-03-17 02:30:53'),
+(26, 'INV-1773714737930', 1, NULL, 23000, 0, 23000, 23999, 999, 'Tunai', 'lunas', '2026-03-17 02:32:17'),
+(27, 'INV-1773715352542', 1, NULL, 23000, 0, 23000, 23000, 0, 'Tunai', 'lunas', '2026-03-17 02:42:32'),
+(28, 'INV-1773741696358', 1, NULL, 12000, 0, 12000, 12000, 0, 'Tunai', 'lunas', '2026-03-17 10:01:36'),
+(29, 'INV-1773742059772', 1, NULL, 186000, 0, 186000, 200000, 14000, 'Tunai', 'lunas', '2026-03-17 10:07:39'),
+(30, 'INV-1773742844670', 1, NULL, 48000, 0, 48000, 50000, 2000, 'Tunai', 'lunas', '2026-03-17 10:20:44');
 
 -- --------------------------------------------------------
 
@@ -285,7 +300,27 @@ INSERT INTO `sale_items` (`id`, `sale_id`, `product_id`, `qty`, `price`, `subtot
 (27, 12, 5, 1, 20000, 20000),
 (28, 13, 4, 1, 25000, 25000),
 (29, 14, 4, 1, 25000, 25000),
-(30, 15, 4, 17, 25000, 425000);
+(30, 15, 4, 17, 25000, 425000),
+(31, 16, 7, 4, 12000, 48000),
+(32, 16, 5, 1, 20000, 20000),
+(33, 16, 4, 1, 25000, 25000),
+(34, 16, 3, 1, 23000, 23000),
+(35, 17, 4, 1, 25000, 25000),
+(36, 18, 7, 1, 12000, 12000),
+(37, 19, 4, 1, 25000, 25000),
+(38, 20, 5, 1, 20000, 20000),
+(39, 21, 1, 1, 28000, 28000),
+(40, 22, 2, 1, 25000, 25000),
+(41, 23, 3, 1, 23000, 23000),
+(42, 24, 3, 1, 23000, 23000),
+(43, 25, 3, 1, 23000, 23000),
+(44, 26, 3, 1, 23000, 23000),
+(45, 27, 3, 1, 23000, 23000),
+(46, 28, 7, 1, 12000, 12000),
+(47, 29, 5, 2, 20000, 40000),
+(48, 29, 4, 4, 25000, 100000),
+(49, 29, 3, 2, 23000, 46000),
+(50, 30, 7, 4, 12000, 48000);
 
 -- --------------------------------------------------------
 
@@ -307,7 +342,7 @@ CREATE TABLE `settings` (
 --
 
 INSERT INTO `settings` (`id`, `store_name`, `email`, `phone`, `address`, `logo`) VALUES
-(1, 'Coffee Shop2', 'admin@toko.com', '08123456789', 'Jl. Jendral Sudirman No. 1', 'logo-1765063719441.svg');
+(1, 'Coffee Shop', 'admin@toko.com', '08123456789', 'Jl. Jendral Sudirman No. 1', 'logo-1765063719441.svg');
 
 -- --------------------------------------------------------
 
@@ -399,6 +434,8 @@ CREATE TABLE `users` (
   `role_id` int(11) DEFAULT 2,
   `password` varchar(255) DEFAULT NULL,
   `avatar` varchar(255) DEFAULT NULL,
+  `trial_ends_at` datetime DEFAULT NULL,
+  `is_subscribed` tinyint(1) DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -406,9 +443,9 @@ CREATE TABLE `users` (
 -- Dumping data untuk tabel `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `role_id`, `password`, `avatar`, `created_at`) VALUES
-(1, 'Admin', 'admin@email.com', 1, '$2b$10$0Ihi0Gt0Zpede7WpXxkQ2ONKY9mQYrTkz2kv0CkvOCYVjK5jWWU2a', 'avatar-1-1765064142496.png', '2025-12-01 02:55:55'),
-(2, 'Budi', 'budi@email.com', 2, '$2b$10$iRfk1CwFRuYKSHCoCczgu.auQ9qjlXyfoHTswrHvvdxkVXTQoJiQ2', NULL, '2025-12-08 04:43:28');
+INSERT INTO `users` (`id`, `name`, `email`, `role_id`, `password`, `avatar`, `trial_ends_at`, `is_subscribed`, `created_at`) VALUES
+(1, 'Admin', 'admin@email.com', 1, '$2b$10$0Ihi0Gt0Zpede7WpXxkQ2ONKY9mQYrTkz2kv0CkvOCYVjK5jWWU2a', 'avatar-1-1765064142496.png', '2026-03-23 17:33:08', 0, '2025-12-01 02:55:55'),
+(2, 'Budi', 'budi@email.com', 2, '$2b$10$iRfk1CwFRuYKSHCoCczgu.auQ9qjlXyfoHTswrHvvdxkVXTQoJiQ2', NULL, '2026-03-23 17:33:08', 0, '2025-12-08 04:43:28');
 
 --
 -- Indexes for dumped tables
@@ -559,19 +596,19 @@ ALTER TABLE `purchase_items`
 -- AUTO_INCREMENT untuk tabel `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT untuk tabel `sales`
 --
 ALTER TABLE `sales`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT untuk tabel `sale_items`
 --
 ALTER TABLE `sale_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 
 --
 -- AUTO_INCREMENT untuk tabel `stock_adjustments`
